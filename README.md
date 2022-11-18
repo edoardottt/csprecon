@@ -16,7 +16,6 @@ ADD BADGES
 </p>
 
 <p align="center">
-<a href="#why-">Why</a> •
   <a href="#install-">Install</a> •
   <a href="#get-started-">Get Started</a> •
   <a href="#examples-">Examples</a> •
