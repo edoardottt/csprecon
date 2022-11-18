@@ -69,7 +69,7 @@ Examples :bulb:
 
 Grab all possible results from single domain
 ```bash
-csprecon -u http://edoardottt.com
+csprecon -u https://www.github.com
 ```
 
 Grab all possible results from a list of domains (protocols needed!)
