@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 	"sync"
 
 	"github.com/edoardottt/csprecon/pkg/input"
+	"github.com/edoardottt/csprecon/pkg/output"
 	"github.com/edoardottt/golazy"
 	"github.com/projectdiscovery/gologger"
 	fileutil "github.com/projectdiscovery/utils/file"
@@ -17,18 +20,18 @@ type Runner struct {
 	Client  *http.Client
 	Input   chan string
 	Output  chan string
-	InWg    sync.WaitGroup
-	OutWg   sync.WaitGroup
+	InWg    *sync.WaitGroup
+	OutWg   *sync.WaitGroup
 	Options input.Options
 }
 
 func New(options *input.Options) Runner {
 	return Runner{
 		Client:  customClient(options.Timeout),
-		Input:   make(chan string),
-		Output:  make(chan string),
-		InWg:    sync.WaitGroup{},
-		OutWg:   sync.WaitGroup{},
+		Input:   make(chan string, options.Concurrency),
+		Output:  make(chan string, options.Concurrency),
+		InWg:    &sync.WaitGroup{},
+		OutWg:   &sync.WaitGroup{},
 		Options: *options,
 	}
 }
@@ -75,27 +78,51 @@ func pushInput(r *Runner) {
 func execute(r *Runner) {
 	defer r.InWg.Done()
 
+	regex := regexp.Regexp{}
+
+	if r.Options.Domain != "" {
+		regex = *CompileRegex(`.*` + r.Options.Domain)
+	}
+
+	dregex := CompileRegex(DomainRegex)
+
 	for value := range r.Input {
-		result, err := checkCSP(value, r.Client)
-		if err == nil {
-			for _, res := range result {
-				r.Output <- res
+		r.InWg.Add(1)
+
+		go func(value string) {
+			defer r.InWg.Done()
+			result, err := checkCSP(value, dregex, r.Client)
+
+			if err == nil {
+				for _, res := range result {
+					if resTrimmed := strings.TrimSpace(res); resTrimmed != "" {
+						if r.Options.Domain != "" {
+							if regex.Match([]byte(resTrimmed)) {
+								r.Output <- resTrimmed
+							}
+						} else {
+							r.Output <- resTrimmed
+						}
+					}
+				}
 			}
-		}
+		}(value)
 	}
 }
 
 func pullOutput(r *Runner) {
 	defer r.OutWg.Done()
 
+	out := output.New()
+
 	for o := range r.Output {
 		r.OutWg.Add(1)
 
-		go writeOutput(&r.OutWg, &r.Options, o)
+		go writeOutput(r.OutWg, &r.Options, &out, o)
 	}
 }
 
-func writeOutput(wg *sync.WaitGroup, options *input.Options, out string) {
+func writeOutput(wg *sync.WaitGroup, options *input.Options, out *output.Result, o string) {
 	defer wg.Done()
 
 	if options.FileOutput != "" {
@@ -107,7 +134,13 @@ func writeOutput(wg *sync.WaitGroup, options *input.Options, out string) {
 		options.Output = file
 	}
 
-	// write output to file
+	if !out.Printed(o) {
+		if options.Output != nil {
+			if _, err := options.Output.Write([]byte(o + "\n")); err != nil && options.Verbose {
+				gologger.Fatal().Msg(err.Error())
+			}
+		}
 
-	fmt.Println(out)
+		fmt.Println(o)
+	}
 }

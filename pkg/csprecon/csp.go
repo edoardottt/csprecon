@@ -2,39 +2,55 @@ package csprecon
 
 import (
 	"crypto/tls"
-	"fmt"
-	"io"
 	"net"
 	"net/http"
+	"regexp"
+	"strings"
 	"time"
 )
 
 const (
 	TLSHandshakeTimeout = 10
 	KeepAlive           = 30
+	DomainRegex         = `.*[a-zA-Z\_\-0-9]+\.[a-z]+`
 )
 
-func checkCSP(url string, client *http.Client) ([]string, error) {
-	return get(url, client)
-}
-
-func get(url string, client *http.Client) ([]string, error) {
+func checkCSP(url string, r *regexp.Regexp, client *http.Client) ([]string, error) {
 	result := []string{}
 	resp, err := client.Get(url)
 
 	if err != nil {
-		return result, nil
+		return result, err
 	}
 
-	body, _ := io.ReadAll(resp.Body)
 	defer resp.Body.Close()
 
-	headerCSP := resp.Header.Get("Content-Security-Policy")
+	headerCSP := parseCSPHeader(resp.Header.Get("Content-Security-Policy"), r)
 
-	fmt.Println(headerCSP)
-	fmt.Println(string(body))
+	return headerCSP, nil
+}
 
-	return []string{}, nil
+func parseCSPHeader(input string, r *regexp.Regexp) []string {
+	result := []string{}
+
+	splitted := strings.Split(input, ";")
+
+	for _, elem := range splitted {
+		spaceSplit := strings.Split(elem, " ")
+		for _, spaceElem := range spaceSplit {
+			if r.Match([]byte(spaceElem)) {
+				result = append(result, spaceElem)
+			}
+		}
+	}
+
+	return result
+}
+
+func parseCSPBody(input string) []string {
+	result := []string{}
+
+	return result
 }
 
 func customClient(timeout int) *http.Client {
@@ -57,4 +73,10 @@ func customClient(timeout int) *http.Client {
 	}
 
 	return &client
+}
+
+func CompileRegex(regex string) *regexp.Regexp {
+	r, _ := regexp.Compile(regex)
+
+	return r
 }

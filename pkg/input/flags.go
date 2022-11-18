@@ -21,6 +21,7 @@ type Options struct {
 	Input       string
 	FileInput   string
 	FileOutput  string
+	Domain      string
 	Verbose     bool
 	Output      io.Writer
 	Silent      bool
@@ -43,10 +44,11 @@ func ParseOptions() *Options {
 
 	flag.StringVar(&options.Input, "u", "", `Input domain`)
 	flag.StringVar(&options.FileInput, "l", "", `File containing input domains`)
+	flag.StringVar(&options.Domain, "d", "", `Filter results belonging to this domain`)
 	flag.StringVar(&options.FileOutput, "o", "", `Output File`)
 	flag.BoolVar(&options.Verbose, "v", false, `Be verbose`)
 	flag.BoolVar(&options.Silent, "s", false, `Print only results`)
-	flag.IntVar(&options.Concurrency, "c", DefaultConcurrency, "Concurrency level (default 100)")
+	flag.IntVar(&options.Concurrency, "c", DefaultConcurrency, "Concurrency level")
 	flag.IntVar(&options.Timeout, "t", DefaultTimeout, "Connection timeout in seconds")
 
 	if help() {
