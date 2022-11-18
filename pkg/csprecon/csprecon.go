@@ -3,7 +3,6 @@ package csprecon
 import (
 	"bufio"
 	"fmt"
-	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -17,7 +16,6 @@ import (
 )
 
 type Runner struct {
-	Client  *http.Client
 	Input   chan string
 	Output  chan string
 	InWg    *sync.WaitGroup
@@ -27,7 +25,6 @@ type Runner struct {
 
 func New(options *input.Options) Runner {
 	return Runner{
-		Client:  customClient(options.Timeout),
 		Input:   make(chan string, options.Concurrency),
 		Output:  make(chan string, options.Concurrency),
 		InWg:    &sync.WaitGroup{},
@@ -86,14 +83,24 @@ func execute(r *Runner) {
 
 	dregex := CompileRegex(DomainRegex)
 
-	for value := range r.Input {
+	for i := 0; i < r.Options.Concurrency; i++ {
 		r.InWg.Add(1)
 
-		go func(value string) {
+		go func() {
 			defer r.InWg.Done()
-			result, err := checkCSP(value, dregex, r.Client)
 
-			if err == nil {
+			for value := range r.Input {
+				client := customClient(r.Options.Timeout)
+
+				result, err := checkCSP(value, dregex, client)
+				if err != nil {
+					if r.Options.Verbose {
+						gologger.Error().Msgf("%s", err)
+					}
+
+					return
+				}
+
 				for _, res := range result {
 					if resTrimmed := strings.TrimSpace(res); resTrimmed != "" {
 						if r.Options.Domain != "" {
@@ -105,12 +112,8 @@ func execute(r *Runner) {
 						}
 					}
 				}
-			} else {
-				if r.Options.Verbose {
-					gologger.Error().Msgf("%s", err)
-				}
 			}
-		}(value)
+		}()
 	}
 }
 

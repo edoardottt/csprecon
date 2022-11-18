@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DefaultTimeout     = 4
+	DefaultTimeout     = 10
 	DefaultConcurrency = 100
 )
 

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/edoardottt/golazy"
 	"golang.org/x/net/html"
 )
 
@@ -54,12 +55,20 @@ func checkCSP(url string, r *regexp.Regexp, client *http.Client) ([]string, erro
 func parseCSP(input string, r *regexp.Regexp) []string {
 	result := []string{}
 
+	var err error
+
 	splitted := strings.Split(input, ";")
 
 	for _, elem := range splitted {
 		spaceSplit := strings.Split(elem, " ")
 		for _, spaceElem := range spaceSplit {
 			if r.Match([]byte(spaceElem)) {
+				if strings.Contains(spaceElem, "://") {
+					spaceElem, err = golazy.GetHost(spaceElem)
+					if err != nil {
+						continue
+					}
+				}
 				result = append(result, spaceElem)
 			}
 		}

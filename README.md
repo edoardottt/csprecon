@@ -52,7 +52,7 @@ Usage of csprecon:
     	File to write output results
   -s	Print only results
   -t int
-    	Connection timeout in seconds (default 4)
+    	Connection timeout in seconds (default 10)
   -u string
     	Input domain
   -v	Verbose output
