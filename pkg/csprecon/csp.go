@@ -16,18 +16,28 @@ const (
 )
 
 func checkCSP(url string, r *regexp.Regexp, client *http.Client) ([]string, error) {
-	result := []string{}
-	resp, err := client.Get(url)
+	var (
+		result    = []string{}
+		headerCSP []string
+		bodyCSP   []string
+	)
 
+	resp, err := client.Get(url)
 	if err != nil {
 		return result, err
 	}
 
 	defer resp.Body.Close()
 
-	headerCSP := parseCSPHeader(resp.Header.Get("Content-Security-Policy"), r)
+	headerCSP = parseCSPHeader(resp.Header.Get("Content-Security-Policy"), r)
+	if len(headerCSP) != 0 {
+		bodyCSP = parseCSPBody("")
+	}
 
-	return headerCSP, nil
+	result = append(result, headerCSP...)
+	result = append(result, bodyCSP...)
+
+	return result, nil
 }
 
 func parseCSPHeader(input string, r *regexp.Regexp) []string {
