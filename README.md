@@ -61,8 +61,23 @@ Usage of csprecon:
 Examples :bulb:
 ----------
 
-```console
-...
+Grab all possible results from single domain
+```bash
+csprecon -u http://edoardottt.com
+```
+
+Grab all possible results from a list of domains (protocols needed!)
+```bash
+csprecon -l targets.txt
+```
+
+```bash
+echo targets.txt | csprecon
+```
+
+Grab all possible results belonging to a specific target from a list of domains (protocols needed!)
+```bash
+echo targets.txt | csprecon -d google.com
 ```
 
 Changelog 📌
