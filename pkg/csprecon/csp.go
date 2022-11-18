@@ -1,0 +1,5 @@
+package csprecon
+
+func checkCSP() {
+
+}
