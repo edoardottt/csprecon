@@ -22,13 +22,15 @@
 <p align="center">
   <a href="#install-">Install</a> •
   <a href="#get-started-">Get Started</a> •
-  <a href="#examples-">Examples</a> •
+  <a href="#examples-bulb">Examples</a> •
   <a href="#changelog-">Changelog</a> •
   <a href="#contributing-">Contributing</a> •
   <a href="#license-">License</a>
 </p>
 
-[![asciicast](https://asciinema.org/a/538691.svg)](https://asciinema.org/a/538691)
+<p align="center">
+  <img src="https://github.com/edoardottt/images/blob/main/csprecon/csprecon.gif">
+</p>
   
 Install 📡
 ----------
