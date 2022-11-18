@@ -28,9 +28,7 @@
   <a href="#license-">License</a>
 </p>
 
-<p align="center">
-<a href="https://asciinema.org/a/538691" target="_blank"><img src="https://asciinema.org/a/538691.svg" /></a>
-</p>
+[![asciicast](https://asciinema.org/a/538691.svg)](https://asciinema.org/a/538691)
   
 Install 📡
 ----------
