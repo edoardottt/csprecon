@@ -28,8 +28,10 @@
   <a href="#license-">License</a>
 </p>
 
-ASCIICAST HERE
-
+<p align="center">
+<a href="https://asciinema.org/a/538691" target="_blank"><img src="https://asciinema.org/a/538691.svg" /></a>
+</p>
+  
 Install 📡
 ----------
 
