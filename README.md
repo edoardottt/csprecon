@@ -41,7 +41,21 @@ Get Started 🎉
 ----------
 
 ```console
-
+Usage of csprecon:
+  -c int
+    	Concurrency level (default 100)
+  -d string
+    	Filter results belonging to this domain
+  -l string
+    	File containing input domains
+  -o string
+    	File to write output results
+  -s	Print only results
+  -t int
+    	Connection timeout in seconds (default 4)
+  -u string
+    	Input domain
+  -v	Verbose output
 ```
 
 Examples :bulb:
