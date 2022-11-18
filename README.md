@@ -13,6 +13,10 @@
       <img src="https://github.com/edoardottt/csprecon/actions/workflows/go.yml/badge.svg" alt="go action">
   </a>
 
+  <a href="https://edoardoottavianelli.it">
+      <img src="https://goreportcard.com/badge/github.com/edoardottt/csprecon" alt="go report card">
+  </a>
+
 <br>
   <!--Tweet button-->
   <a href="https://twitter.com/intent/tweet?text=csprecon%20-%20Reconnaissance%20tool%20based%20on%20Content%20Security%20Policy%20https%3A%2F%2Fgithub.com%2Fedoardottt%2Fcsprecon%20%23golang%20%23github%20%23linux%20%23infosec%20%23bugbounty" target="_blank">Share on Twitter!
