@@ -105,6 +105,10 @@ func execute(r *Runner) {
 						}
 					}
 				}
+			} else {
+				if r.Options.Verbose {
+					gologger.Error().Msgf("%s", err)
+				}
 			}
 		}(value)
 	}

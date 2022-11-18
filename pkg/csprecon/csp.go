@@ -25,7 +25,12 @@ func checkCSP(url string, r *regexp.Regexp, client *http.Client) ([]string, erro
 		bodyCSP   []string
 	)
 
-	resp, err := client.Get(url)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return result, err
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return result, err
 	}
@@ -100,13 +105,9 @@ func parseCSPBody(input io.ReadCloser, r *regexp.Regexp) ([]string, error) {
 }
 
 func customClient(timeout int) *http.Client {
-	//ref: Copy and modify defaults from https://golang.org/src/net/http/transport.go
-	//Note: Clients and Transports should only be created once and reused
 	transport := http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		Proxy:           http.ProxyFromEnvironment,
 		Dial: (&net.Dialer{
-			// Modify the time to wait for a connection to establish
 			Timeout:   time.Duration(timeout) * time.Second,
 			KeepAlive: KeepAlive * time.Second,
 		}).Dial,
