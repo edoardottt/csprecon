@@ -3,7 +3,7 @@
   <br>
 </h1>
 
-<h4 align="center">Grab domain names from Content Security Policy</h4>
+<h4 align="center">Grab new domains from Content Security Policy</h4>
 
 <h6 align="center"> Coded with 💙 by edoardottt </h6>
 
