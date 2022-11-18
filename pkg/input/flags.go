@@ -12,6 +12,11 @@ import (
 	"github.com/projectdiscovery/gologger/levels"
 )
 
+const (
+	DefaultTimeout     = 4
+	DefaultConcurrency = 100
+)
+
 type Options struct {
 	Input       string
 	FileInput   string
@@ -41,8 +46,8 @@ func ParseOptions() *Options {
 	flag.StringVar(&options.FileOutput, "o", "", `Output File`)
 	flag.BoolVar(&options.Verbose, "v", false, `Be verbose`)
 	flag.BoolVar(&options.Silent, "s", false, `Print only results`)
-	flag.IntVar(&options.Concurrency, "c", 100, "Concurrency level (default 100)")
-	flag.IntVar(&options.Timeout, "t", 4, "Connection timeout in seconds")
+	flag.IntVar(&options.Concurrency, "c", DefaultConcurrency, "Concurrency level (default 100)")
+	flag.IntVar(&options.Timeout, "t", DefaultTimeout, "Connection timeout in seconds")
 
 	if help() {
 		output.ShowBanner()

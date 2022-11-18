@@ -2,8 +2,7 @@ package csprecon
 
 import (
 	"bufio"
-	"fmt"
-	"net/url"
+	"net/http"
 	"os"
 	"sync"
 
@@ -14,6 +13,7 @@ import (
 )
 
 type Runner struct {
+	Client  *http.Client
 	Input   chan string
 	Output  chan string
 	InWg    sync.WaitGroup
@@ -23,6 +23,7 @@ type Runner struct {
 
 func New(options *input.Options) Runner {
 	return Runner{
+		Client:  customClient(options.Timeout),
 		Input:   make(chan string),
 		Output:  make(chan string),
 		InWg:    sync.WaitGroup{},
@@ -33,13 +34,13 @@ func New(options *input.Options) Runner {
 
 func (r *Runner) Run() {
 	r.InWg.Add(1)
-	go pushInput(&r.InWg, &r.Options, r.Input)
+	go pushInput(r)
 
 	r.InWg.Add(1)
-	go execute(&r.InWg, &r.Options, r.Input, r.Output)
+	go execute(r)
 
 	r.OutWg.Add(1)
-	go pullOutput(&r.OutWg, &r.Options, r.Output)
+	go pullOutput(r)
 
 	r.InWg.Wait()
 
@@ -47,50 +48,51 @@ func (r *Runner) Run() {
 	r.OutWg.Wait()
 }
 
-func pushInput(wg *sync.WaitGroup, options *input.Options, inputchan chan string) {
-	defer wg.Done()
+func pushInput(r *Runner) {
+	defer r.InWg.Done()
 
 	if fileutil.HasStdin() {
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
-			inputchan <- scanner.Text()
+			r.Input <- scanner.Text()
 		}
 	}
 
-	if options.FileInput != "" {
-		for _, line := range golazy.ReadFileLineByLine(options.FileInput) {
-			inputchan <- line
+	if r.Options.FileInput != "" {
+		for _, line := range golazy.ReadFileLineByLine(r.Options.FileInput) {
+			r.Input <- line
 		}
 	}
 
-	if options.Input != "" {
-		inputchan <- options.Input
+	if r.Options.Input != "" {
+		r.Input <- r.Options.Input
 	}
 
-	close(inputchan)
+	close(r.Input)
 }
 
-func execute(wg *sync.WaitGroup, options *input.Options, inputchan chan string, outputchan chan string) {
-	defer wg.Done()
-	for value := range inputchan {
-		result, err := checkCSP(value)
+func execute(r *Runner) {
+	defer r.InWg.Done()
+	for value := range r.Input {
+		result, err := checkCSP(value, r.Client)
 		if err == nil {
-			fmt.Println(result)
-			outputchan <- *result
+			for _, res := range result {
+				r.Output <- res
+			}
 		}
 	}
 }
 
-func pullOutput(wg *sync.WaitGroup, options *input.Options, outputchan chan string) {
-	defer wg.Done()
+func pullOutput(r *Runner) {
+	defer r.OutWg.Done()
 
-	for o := range outputchan {
-		wg.Add(1)
-		go writeOutput(wg, options, o)
+	for o := range r.Output {
+		r.OutWg.Add(1)
+		go writeOutput(&r.OutWg, &r.Options, o)
 	}
 }
 
-func writeOutput(wg *sync.WaitGroup, options *input.Options, out url.URL) {
+func writeOutput(wg *sync.WaitGroup, options *input.Options, out string) {
 	defer wg.Done()
 	if options.FileOutput != "" {
 		file, err := os.OpenFile(options.FileOutput, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
@@ -100,5 +102,6 @@ func writeOutput(wg *sync.WaitGroup, options *input.Options, out url.URL) {
 		options.Output = file
 	}
 
+	//print output
 	//write output to file
 }
