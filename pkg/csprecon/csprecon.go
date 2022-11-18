@@ -74,6 +74,7 @@ func pushInput(r *Runner) {
 
 func execute(r *Runner) {
 	defer r.InWg.Done()
+
 	for value := range r.Input {
 		result, err := checkCSP(value, r.Client)
 		if err == nil {
@@ -89,17 +90,20 @@ func pullOutput(r *Runner) {
 
 	for o := range r.Output {
 		r.OutWg.Add(1)
+
 		go writeOutput(&r.OutWg, &r.Options, o)
 	}
 }
 
 func writeOutput(wg *sync.WaitGroup, options *input.Options, out string) {
 	defer wg.Done()
+
 	if options.FileOutput != "" {
 		file, err := os.OpenFile(options.FileOutput, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
 		if err != nil {
 			gologger.Fatal().Msg(err.Error())
 		}
+
 		options.Output = file
 	}
 

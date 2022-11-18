@@ -52,3 +52,4 @@ linters-settings:
     # Default: []
     ignored-numbers:
       - '2'
+      - '0644'

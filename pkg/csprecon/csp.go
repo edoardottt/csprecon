@@ -3,10 +3,15 @@ package csprecon
 import (
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"time"
+)
+
+const (
+	TLSHandshakeTimeout = 10
+	KeepAlive           = 30
 )
 
 func checkCSP(url string, client *http.Client) ([]string, error) {
@@ -21,11 +26,8 @@ func get(url string, client *http.Client) ([]string, error) {
 		return result, nil
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-
-	if resp != nil {
-		defer resp.Body.Close()
-	}
+	body, _ := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
 
 	headerCSP := resp.Header.Get("Content-Security-Policy")
 
@@ -44,9 +46,9 @@ func customClient(timeout int) *http.Client {
 		Dial: (&net.Dialer{
 			// Modify the time to wait for a connection to establish
 			Timeout:   time.Duration(timeout) * time.Second,
-			KeepAlive: 30 * time.Second,
+			KeepAlive: KeepAlive * time.Second,
 		}).Dial,
-		TLSHandshakeTimeout: 10 * time.Second,
+		TLSHandshakeTimeout: TLSHandshakeTimeout * time.Second,
 	}
 
 	client := http.Client{
