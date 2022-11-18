@@ -81,7 +81,7 @@ func execute(r *Runner) {
 	regex := regexp.Regexp{}
 
 	if r.Options.Domain != "" {
-		regex = *CompileRegex(`.*` + r.Options.Domain)
+		regex = *CompileRegex(`.*\.` + r.Options.Domain)
 	}
 
 	dregex := CompileRegex(DomainRegex)
