@@ -2,6 +2,7 @@ package csprecon
 
 import (
 	"bufio"
+	"fmt"
 	"net/http"
 	"os"
 	"sync"
@@ -34,14 +35,14 @@ func New(options *input.Options) Runner {
 
 func (r *Runner) Run() {
 	r.InWg.Add(1)
+
 	go pushInput(r)
-
 	r.InWg.Add(1)
+
 	go execute(r)
-
 	r.OutWg.Add(1)
-	go pullOutput(r)
 
+	go pullOutput(r)
 	r.InWg.Wait()
 
 	close(r.Output)
@@ -102,6 +103,7 @@ func writeOutput(wg *sync.WaitGroup, options *input.Options, out string) {
 		options.Output = file
 	}
 
-	//print output
-	//write output to file
+	// write output to file
+
+	fmt.Println(out)
 }
