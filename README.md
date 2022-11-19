@@ -3,7 +3,7 @@
   <br>
 </h1>
 
-<h4 align="center">Reconnaissance tool based on Content Security Policy</h4>
+<h4 align="center">Discover new target domains using Content Security Policy</h4>
 
 <h6 align="center"> Coded with 💙 by edoardottt </h6>
 
@@ -69,7 +69,7 @@ Examples :bulb:
 
 Grab all possible results from single domain
 ```bash
-csprecon -u http://edoardottt.com
+csprecon -u https://www.github.com
 ```
 
 Grab all possible results from a list of domains (protocols needed!)
