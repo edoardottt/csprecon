@@ -6,13 +6,13 @@ import (
 
 type Result struct {
 	Map   map[string]struct{}
-	Mutex sync.RWMutex
+	Mutex *sync.RWMutex
 }
 
 func New() Result {
 	return Result{
 		Map:   map[string]struct{}{},
-		Mutex: sync.RWMutex{},
+		Mutex: &sync.RWMutex{},
 	}
 }
 

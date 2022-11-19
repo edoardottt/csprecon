@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 	"sync"
 
@@ -77,12 +76,6 @@ func pushInput(r *Runner) {
 func execute(r *Runner) {
 	defer r.InWg.Done()
 
-	regex := regexp.Regexp{}
-
-	if r.Options.Domain != "" {
-		regex = *CompileRegex(`.*\.` + r.Options.Domain)
-	}
-
 	dregex := CompileRegex(DomainRegex)
 
 	for i := 0; i < r.Options.Concurrency; i++ {
@@ -105,8 +98,8 @@ func execute(r *Runner) {
 
 				for _, res := range result {
 					if resTrimmed := strings.TrimSpace(res); resTrimmed != "" {
-						if r.Options.Domain != "" {
-							if regex.Match([]byte(resTrimmed)) {
+						if len(r.Options.Domain) != 0 {
+							if domainOk(resTrimmed, r.Options.Domain) {
 								r.Output <- resTrimmed
 							}
 						} else {

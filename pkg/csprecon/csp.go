@@ -136,3 +136,13 @@ func CompileRegex(regex string) *regexp.Regexp {
 
 	return r
 }
+
+func domainOk(input string, domains []string) bool {
+	for _, domain := range domains {
+		if len(input) > len(domain)+1 && input[len(input)-len(domain)-1:] == "."+domain {
+			return true
+		}
+	}
+
+	return false
+}
