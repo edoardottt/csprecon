@@ -126,12 +126,12 @@ func pullOutput(r *Runner) {
 		if !r.Result.Printed(o) {
 			r.OutWg.Add(1)
 
-			go writeOutput(r.OutWg, &r.Options, &r.Result, o)
+			go writeOutput(r.OutWg, &r.Options, o)
 		}
 	}
 }
 
-func writeOutput(wg *sync.WaitGroup, options *input.Options, out *output.Result, o string) {
+func writeOutput(wg *sync.WaitGroup, options *input.Options, o string) {
 	defer wg.Done()
 
 	if options.FileOutput != "" && options.Output == nil {
@@ -150,5 +150,4 @@ func writeOutput(wg *sync.WaitGroup, options *input.Options, out *output.Result,
 	}
 
 	fmt.Println(o)
-
 }

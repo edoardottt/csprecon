@@ -23,6 +23,7 @@ func (o *Result) Printed(result string) bool {
 		o.Mutex.Lock()
 		o.Map[result] = struct{}{}
 		o.Mutex.Unlock()
+
 		return false
 	} else {
 		o.Mutex.RUnlock()
