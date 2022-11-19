@@ -18,6 +18,7 @@ import (
 type Runner struct {
 	Input   chan string
 	Output  chan string
+	Result  output.Result
 	InWg    *sync.WaitGroup
 	OutWg   *sync.WaitGroup
 	Options input.Options
@@ -27,6 +28,7 @@ func New(options *input.Options) Runner {
 	return Runner{
 		Input:   make(chan string, options.Concurrency),
 		Output:  make(chan string, options.Concurrency),
+		Result:  output.New(),
 		InWg:    &sync.WaitGroup{},
 		OutWg:   &sync.WaitGroup{},
 		Options: *options,
@@ -120,19 +122,19 @@ func execute(r *Runner) {
 func pullOutput(r *Runner) {
 	defer r.OutWg.Done()
 
-	out := output.New()
-
 	for o := range r.Output {
-		r.OutWg.Add(1)
+		if !r.Result.Printed(o) {
+			r.OutWg.Add(1)
 
-		go writeOutput(r.OutWg, &r.Options, &out, o)
+			go writeOutput(r.OutWg, &r.Options, &r.Result, o)
+		}
 	}
 }
 
 func writeOutput(wg *sync.WaitGroup, options *input.Options, out *output.Result, o string) {
 	defer wg.Done()
 
-	if options.FileOutput != "" {
+	if options.FileOutput != "" && options.Output == nil {
 		file, err := os.OpenFile(options.FileOutput, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
 		if err != nil {
 			gologger.Fatal().Msg(err.Error())
@@ -141,13 +143,12 @@ func writeOutput(wg *sync.WaitGroup, options *input.Options, out *output.Result,
 		options.Output = file
 	}
 
-	if !out.Printed(o) {
-		if options.Output != nil {
-			if _, err := options.Output.Write([]byte(o + "\n")); err != nil && options.Verbose {
-				gologger.Fatal().Msg(err.Error())
-			}
+	if options.Output != nil {
+		if _, err := options.Output.Write([]byte(o + "\n")); err != nil && options.Verbose {
+			gologger.Fatal().Msg(err.Error())
 		}
-
-		fmt.Println(o)
 	}
+
+	fmt.Println(o)
+
 }
