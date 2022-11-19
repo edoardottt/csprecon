@@ -47,21 +47,25 @@ Get Started 🎉
 ----------
 
 ```console
-Usage of csprecon:
-  -c int
-    	Concurrency level (default 100)
-  -d string
-    	Filter results belonging to this domain
-  -l string
-    	File containing input domains
-  -o string
-    	File to write output results
-  -s	Print only results
-  -t int
-    	Connection timeout in seconds (default 10)
-  -u string
-    	Input domain
-  -v	Verbose output
+Usage:
+  csprecon [flags]
+
+Flags:
+INPUT:
+   -u string  Input domain
+   -l string  File containing input domains
+
+CONFIGURATIONS:
+   -d string[]  Filter results belonging to these domains (comma separated)
+   -c int       Concurrency level (default 100)
+   -t int       Connection timeout in seconds (default 10)
+
+OUTPUT:
+   -o string  File to write output results
+   -v         Verbose output
+   -s         Print only results
+
+
 ```
 
 Examples :bulb:
@@ -81,7 +85,7 @@ csprecon -l targets.txt
 echo targets.txt | csprecon
 ```
 
-Grab all possible results belonging to a specific target from a list of domains (protocols needed!)
+Grab all possible results belonging to a specific target(s) from a list of domains (protocols needed!)
 ```bash
 echo targets.txt | csprecon -d google.com
 ```
