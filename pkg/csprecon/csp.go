@@ -2,7 +2,6 @@ package csprecon
 
 import (
 	"crypto/tls"
-	"io"
 	"net"
 	"net/http"
 	"regexp"
@@ -10,7 +9,6 @@ import (
 	"time"
 
 	"github.com/edoardottt/golazy"
-	"golang.org/x/net/html"
 )
 
 const (
@@ -19,11 +17,10 @@ const (
 	DomainRegex         = `.*[a-zA-Z\_\-0-9]+\.[a-z]+`
 )
 
-func checkCSP(url string, r *regexp.Regexp, client *http.Client) ([]string, error) {
+func checkCSP(url string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
 	var (
 		result    = []string{}
 		headerCSP []string
-		bodyCSP   []string
 	)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -38,16 +35,8 @@ func checkCSP(url string, r *regexp.Regexp, client *http.Client) ([]string, erro
 
 	defer resp.Body.Close()
 
-	headerCSP = parseCSP(resp.Header.Get("Content-Security-Policy"), r)
-	if len(headerCSP) == 0 {
-		bodyCSP, err = parseCSPBody(resp.Body, r)
-		if err != nil {
-			return result, nil
-		}
-	}
-
+	headerCSP = parseCSP(resp.Header.Get("Content-Security-Policy"), rCSP)
 	result = append(result, headerCSP...)
-	result = append(result, bodyCSP...)
 
 	return result, nil
 }
@@ -77,42 +66,6 @@ func parseCSP(input string, r *regexp.Regexp) []string {
 	return result
 }
 
-func parseCSPBody(input io.ReadCloser, r *regexp.Regexp) ([]string, error) {
-	result := []string{}
-
-	doc, err := html.Parse(input)
-	if err != nil {
-		return result, err
-	}
-
-	bodyString, err := io.ReadAll(input)
-	if err != nil {
-		return result, err
-	}
-
-	if strings.Contains(string(bodyString), `http-equiv="Content-Security-Policy"`) {
-		// Recursively visit nodes in the parse tree
-		var f func(*html.Node)
-		f = func(n *html.Node) {
-			if n.Data == "meta" {
-				for _, a := range n.Attr {
-					if a.Key == "content" {
-						result = parseCSP(a.Val, r)
-						break
-					}
-				}
-			}
-
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				f(c)
-			}
-		}
-		f(doc)
-	}
-
-	return result, nil
-}
-
 func customClient(timeout int) *http.Client {
 	transport := http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -135,4 +88,14 @@ func CompileRegex(regex string) *regexp.Regexp {
 	r, _ := regexp.Compile(regex)
 
 	return r
+}
+
+func domainOk(input string, domains []string) bool {
+	for _, domain := range domains {
+		if len(input) > len(domain)+1 && input[len(input)-len(domain)-1:] == "."+domain {
+			return true
+		}
+	}
+
+	return false
 }
