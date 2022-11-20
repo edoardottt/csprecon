@@ -2,8 +2,6 @@ package input
 
 import (
 	"io"
-	"os"
-	"strings"
 
 	"github.com/edoardottt/csprecon/pkg/output"
 	"github.com/projectdiscovery/goflags"
@@ -63,7 +61,7 @@ func ParseOptions() *Options {
 		flagSet.BoolVar(&options.Silent, "s", false, `Print only results`),
 	)
 
-	if help() || noArgs() || !options.Silent {
+	if !options.Silent {
 		output.ShowBanner()
 	}
 
@@ -80,21 +78,4 @@ func ParseOptions() *Options {
 	}
 
 	return options
-}
-
-func help() bool {
-	// help usage asked by user.
-	for _, arg := range os.Args {
-		argStripped := strings.Trim(arg, "-")
-		if argStripped == "h" || argStripped == "help" {
-			return true
-		}
-	}
-
-	return false
-}
-
-func noArgs() bool {
-	// User passed no flag.
-	return len(os.Args) < 2
 }

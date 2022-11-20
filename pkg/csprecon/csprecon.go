@@ -61,7 +61,7 @@ func pushInput(r *Runner) {
 	}
 
 	if r.Options.FileInput != "" {
-		for _, line := range golazy.ReadFileLineByLine(r.Options.FileInput) {
+		for _, line := range golazy.RemoveDuplicateValues(golazy.ReadFileLineByLine(r.Options.FileInput)) {
 			r.Input <- line
 		}
 	}
