@@ -52,20 +52,18 @@ Usage:
 
 Flags:
 INPUT:
-   -u string  Input domain
-   -l string  File containing input domains
+   -u, -url string   Input domain
+   -l, -list string  File containing input domains
 
 CONFIGURATIONS:
-   -d string[]  Filter results belonging to these domains (comma separated)
-   -c int       Concurrency level (default 100)
-   -t int       Connection timeout in seconds (default 10)
+   -d, -domain string[]  Filter results belonging to these domains (comma separated)
+   -c, -concurrency int  Concurrency level (default 100)
+   -t, -timeout int      Connection timeout in seconds (default 10)
 
 OUTPUT:
-   -o string  File to write output results
-   -v         Verbose output
-   -s         Print only results
-
-
+   -o, -output string  File to write output results
+   -v, -verbose        Verbose output
+   -s, -silent         Silent output. Print only results
 ```
 
 Examples :bulb:
