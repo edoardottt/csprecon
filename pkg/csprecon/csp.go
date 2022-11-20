@@ -11,17 +11,13 @@ import (
 	"github.com/edoardottt/golazy"
 )
 
-var (
-	UserAgent = golazy.GenerateRandomUserAgent()
-)
-
 const (
 	TLSHandshakeTimeout = 10
 	KeepAlive           = 30
 	DomainRegex         = `.*[a-zA-Z\_\-0-9]+\.[a-z]+`
 )
 
-func checkCSP(url string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
+func checkCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
 	var (
 		result    = []string{}
 		headerCSP []string
@@ -32,7 +28,7 @@ func checkCSP(url string, rCSP *regexp.Regexp, client *http.Client) ([]string, e
 		return result, err
 	}
 
-	req.Header.Add("User-Agent", UserAgent)
+	req.Header.Add("User-Agent", ua)
 
 	resp, err := client.Do(req)
 	if err != nil {
