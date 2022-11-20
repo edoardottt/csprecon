@@ -80,12 +80,12 @@ csprecon -l targets.txt
 ```
 
 ```bash
-echo targets.txt | csprecon
+cat targets.txt | csprecon
 ```
 
 Grab all possible results belonging to a specific target(s) from a list of domains (protocols needed!)
 ```bash
-echo targets.txt | csprecon -d google.com
+cat targets.txt | csprecon -d google.com
 ```
 
 Changelog 📌
