@@ -17,7 +17,7 @@ const (
 	DomainRegex         = `.*[a-zA-Z\_\-0-9]+\.[a-z]+`
 )
 
-func checkCSP(url string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
+func checkCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
 	var (
 		result    = []string{}
 		headerCSP []string
@@ -27,6 +27,8 @@ func checkCSP(url string, rCSP *regexp.Regexp, client *http.Client) ([]string, e
 	if err != nil {
 		return result, err
 	}
+
+	req.Header.Add("User-Agent", ua)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -69,6 +71,7 @@ func parseCSP(input string, r *regexp.Regexp) []string {
 func customClient(timeout int) *http.Client {
 	transport := http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		Proxy:           http.ProxyFromEnvironment,
 		Dial: (&net.Dialer{
 			Timeout:   time.Duration(timeout) * time.Second,
 			KeepAlive: KeepAlive * time.Second,

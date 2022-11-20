@@ -15,22 +15,24 @@ import (
 )
 
 type Runner struct {
-	Input   chan string
-	Output  chan string
-	Result  output.Result
-	InWg    *sync.WaitGroup
-	OutWg   *sync.WaitGroup
-	Options input.Options
+	Input     chan string
+	Output    chan string
+	Result    output.Result
+	UserAgent string
+	InWg      *sync.WaitGroup
+	OutWg     *sync.WaitGroup
+	Options   input.Options
 }
 
 func New(options *input.Options) Runner {
 	return Runner{
-		Input:   make(chan string, options.Concurrency),
-		Output:  make(chan string, options.Concurrency),
-		Result:  output.New(),
-		InWg:    &sync.WaitGroup{},
-		OutWg:   &sync.WaitGroup{},
-		Options: *options,
+		Input:     make(chan string, options.Concurrency),
+		Output:    make(chan string, options.Concurrency),
+		Result:    output.New(),
+		UserAgent: golazy.GenerateRandomUserAgent(),
+		InWg:      &sync.WaitGroup{},
+		OutWg:     &sync.WaitGroup{},
+		Options:   *options,
 	}
 }
 
@@ -87,7 +89,7 @@ func execute(r *Runner) {
 			for value := range r.Input {
 				client := customClient(r.Options.Timeout)
 
-				result, err := checkCSP(value, dregex, client)
+				result, err := checkCSP(value, r.UserAgent, dregex, client)
 				if err != nil {
 					if r.Options.Verbose {
 						gologger.Error().Msgf("%s", err)
