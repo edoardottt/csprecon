@@ -76,6 +76,7 @@ func ParseOptions() *Options {
 	options.configureOutput()
 
 	if err := options.validateOptions(); err != nil {
+		output.ShowBanner()
 		gologger.Fatal().Msgf("%s\n", err)
 	}
 
