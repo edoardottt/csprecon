@@ -63,7 +63,7 @@ func ParseOptions() *Options {
 		flagSet.BoolVar(&options.Silent, "s", false, `Print only results`),
 	)
 
-	if help() || noArgs() || !options.Silent {
+	if (help() || noArgs()) && !options.Silent {
 		output.ShowBanner()
 	}
 
