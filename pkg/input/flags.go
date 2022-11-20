@@ -2,6 +2,8 @@ package input
 
 import (
 	"io"
+	"os"
+	"strings"
 
 	"github.com/edoardottt/csprecon/pkg/output"
 	"github.com/projectdiscovery/goflags"
@@ -44,24 +46,24 @@ func ParseOptions() *Options {
 
 	// Input
 	flagSet.CreateGroup("input", "Input",
-		flagSet.StringVar(&options.Input, "u", "", `Input domain`),
-		flagSet.StringVar(&options.FileInput, "l", "", `File containing input domains`),
+		flagSet.StringVarP(&options.Input, "url", "u", "", `Input domain`),
+		flagSet.StringVarP(&options.FileInput, "list", "l", "", `File containing input domains`),
 	)
 
 	flagSet.CreateGroup("configs", "Configurations",
-		flagSet.StringSliceVar(&options.Domain, "d", nil, `Filter results belonging to these domains (comma separated)`, goflags.CommaSeparatedStringSliceOptions),
-		flagSet.IntVar(&options.Concurrency, "c", DefaultConcurrency, `Concurrency level`),
-		flagSet.IntVar(&options.Timeout, "t", DefaultTimeout, `Connection timeout in seconds`),
+		flagSet.StringSliceVarP(&options.Domain, "domain", "d", nil, `Filter results belonging to these domains (comma separated)`, goflags.CommaSeparatedStringSliceOptions),
+		flagSet.IntVarP(&options.Concurrency, "concurrency", "c", DefaultConcurrency, `Concurrency level`),
+		flagSet.IntVarP(&options.Timeout, "timeout", "t", DefaultTimeout, `Connection timeout in seconds`),
 	)
 
 	// Output
 	flagSet.CreateGroup("output", "Output",
-		flagSet.StringVar(&options.FileOutput, "o", "", `File to write output results`),
-		flagSet.BoolVar(&options.Verbose, "v", false, `Verbose output`),
-		flagSet.BoolVar(&options.Silent, "s", false, `Print only results`),
+		flagSet.StringVarP(&options.FileOutput, "output", "o", "", `File to write output results`),
+		flagSet.BoolVarP(&options.Verbose, "verbose", "v", false, `Verbose output`),
+		flagSet.BoolVarP(&options.Silent, "silent", "s", false, `Silent output. Print only results`),
 	)
 
-	if !options.Silent {
+	if help() || noArgs() {
 		output.ShowBanner()
 	}
 
@@ -77,5 +79,24 @@ func ParseOptions() *Options {
 		gologger.Fatal().Msgf("%s\n", err)
 	}
 
+	output.ShowBanner()
+
 	return options
+}
+
+func help() bool {
+	// help usage asked by user.
+	for _, arg := range os.Args {
+		argStripped := strings.Trim(arg, "-")
+		if argStripped == "h" || argStripped == "help" {
+			return true
+		}
+	}
+
+	return false
+}
+
+func noArgs() bool {
+	// User passed no flag.
+	return len(os.Args) < 2
 }
