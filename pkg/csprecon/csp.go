@@ -2,12 +2,15 @@ package csprecon
 
 import (
 	"crypto/tls"
+	"io"
+	"log"
 	"net"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/edoardottt/golazy"
 )
 
@@ -40,6 +43,11 @@ func checkCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 	headerCSP = parseCSP(resp.Header.Get("Content-Security-Policy"), rCSP)
 	result = append(result, headerCSP...)
 
+	if len(headerCSP) == 0 {
+		bodyCSP := parseBodyCSP(resp.Body, rCSP)
+		result = append(result, bodyCSP...)
+	}
+
 	return result, nil
 }
 
@@ -64,6 +72,24 @@ func parseCSP(input string, r *regexp.Regexp) []string {
 			}
 		}
 	}
+
+	return result
+}
+
+func parseBodyCSP(body io.Reader, rCSP *regexp.Regexp) []string {
+	result := []string{}
+
+	doc, err := goquery.NewDocumentFromReader(body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	doc.Find("meta[http-equiv='Content-Security-Policy']").Each(func(i int, s *goquery.Selection) {
+		contentCSP := s.AttrOr("content", "")
+		if contentCSP != "" {
+			result = parseCSP(contentCSP, rCSP)
+		}
+	})
 
 	return result
 }

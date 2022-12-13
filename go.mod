@@ -2,9 +2,13 @@ module github.com/edoardottt/csprecon
 
 go 1.18
 
-require github.com/projectdiscovery/utils v0.0.3
+require (
+	github.com/PuerkitoBio/goquery v1.8.0
+	github.com/projectdiscovery/utils v0.0.3
+)
 
 require (
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/cnf/structhash v0.0.0-20201127153200-e1b16c1ebc08 // indirect
 	github.com/projectdiscovery/fileutil v0.0.0-20220705195237-01becc2a8963 // indirect
 	github.com/projectdiscovery/stringsutil v0.0.2 // indirect
