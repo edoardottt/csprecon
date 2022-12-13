@@ -13,7 +13,7 @@
       <img src="https://github.com/edoardottt/csprecon/actions/workflows/go.yml/badge.svg" alt="go action">
   </a>
 
-  <a href="https://edoardoottavianelli.it">
+  <a href="https://goreportcard.com/report/github.com/edoardottt/csprecon">
       <img src="https://goreportcard.com/badge/github.com/edoardottt/csprecon" alt="go report card">
   </a>
 
