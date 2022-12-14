@@ -17,14 +17,11 @@ import (
 const (
 	TLSHandshakeTimeout = 10
 	KeepAlive           = 30
-	DomainRegex         = `.*[a-zA-Z\_\-0-9]+\.[a-z]+`
+	DomainRegex         = `(?i).*[a-z\_\-0-9]+\.[a-z]+`
 )
 
 func checkCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
-	var (
-		result    = []string{}
-		headerCSP []string
-	)
+	result := []string{}
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -40,7 +37,7 @@ func checkCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 
 	defer resp.Body.Close()
 
-	headerCSP = parseCSP(resp.Header.Get("Content-Security-Policy"), rCSP)
+	headerCSP := parseCSP(resp.Header.Get("Content-Security-Policy"), rCSP)
 	result = append(result, headerCSP...)
 
 	if len(headerCSP) == 0 {
