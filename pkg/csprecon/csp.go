@@ -20,6 +20,7 @@ const (
 	DomainRegex         = `(?i).*[a-z\_\-0-9]+\.[a-z]+`
 )
 
+// CheckCSP returns the list of domains parsed from a URL found in CSP.
 func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
 	result := []string{}
 
@@ -48,6 +49,7 @@ func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 	return result, nil
 }
 
+// ParseCSP returns the list of domains parsed from a raw CSP (string).
 func ParseCSP(input string, r *regexp.Regexp) []string {
 	result := []string{}
 
@@ -73,6 +75,8 @@ func ParseCSP(input string, r *regexp.Regexp) []string {
 	return golazy.RemoveDuplicateValues(result)
 }
 
+// ParseBodyCSP returns the list of domains parsed from the CSP found in the meta tag
+// of the input HTML body.
 func ParseBodyCSP(body io.Reader, rCSP *regexp.Regexp) []string {
 	result := []string{}
 
