@@ -20,7 +20,7 @@ const (
 	DomainRegex         = `(?i).*[a-z\_\-0-9]+\.[a-z]+`
 )
 
-func checkCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
+func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
 	result := []string{}
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
