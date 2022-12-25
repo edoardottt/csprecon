@@ -17,14 +17,12 @@ import (
 const (
 	TLSHandshakeTimeout = 10
 	KeepAlive           = 30
-	DomainRegex         = `.*[a-zA-Z\_\-0-9]+\.[a-z]+`
+	DomainRegex         = `(?i).*[a-z\_\-0-9]+\.[a-z]+`
 )
 
-func checkCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
-	var (
-		result    = []string{}
-		headerCSP []string
-	)
+// CheckCSP returns the list of domains parsed from a URL found in CSP.
+func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
+	result := []string{}
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -40,18 +38,19 @@ func checkCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 
 	defer resp.Body.Close()
 
-	headerCSP = parseCSP(resp.Header.Get("Content-Security-Policy"), rCSP)
+	headerCSP := ParseCSP(resp.Header.Get("Content-Security-Policy"), rCSP)
 	result = append(result, headerCSP...)
 
 	if len(headerCSP) == 0 {
-		bodyCSP := parseBodyCSP(resp.Body, rCSP)
+		bodyCSP := ParseBodyCSP(resp.Body, rCSP)
 		result = append(result, bodyCSP...)
 	}
 
 	return result, nil
 }
 
-func parseCSP(input string, r *regexp.Regexp) []string {
+// ParseCSP returns the list of domains parsed from a raw CSP (string).
+func ParseCSP(input string, r *regexp.Regexp) []string {
 	result := []string{}
 
 	var err error
@@ -73,10 +72,12 @@ func parseCSP(input string, r *regexp.Regexp) []string {
 		}
 	}
 
-	return result
+	return golazy.RemoveDuplicateValues(result)
 }
 
-func parseBodyCSP(body io.Reader, rCSP *regexp.Regexp) []string {
+// ParseBodyCSP returns the list of domains parsed from the CSP found in the meta tag
+// of the input HTML body.
+func ParseBodyCSP(body io.Reader, rCSP *regexp.Regexp) []string {
 	result := []string{}
 
 	doc, err := goquery.NewDocumentFromReader(body)
@@ -87,7 +88,7 @@ func parseBodyCSP(body io.Reader, rCSP *regexp.Regexp) []string {
 	doc.Find("meta[http-equiv='Content-Security-Policy']").Each(func(i int, s *goquery.Selection) {
 		contentCSP := s.AttrOr("content", "")
 		if contentCSP != "" {
-			result = parseCSP(contentCSP, rCSP)
+			result = ParseCSP(contentCSP, rCSP)
 		}
 	})
 

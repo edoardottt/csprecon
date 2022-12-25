@@ -89,7 +89,7 @@ func execute(r *Runner) {
 			for value := range r.Input {
 				client := customClient(r.Options.Timeout)
 
-				result, err := checkCSP(value, r.UserAgent, dregex, client)
+				result, err := CheckCSP(value, r.UserAgent, dregex, client)
 				if err != nil {
 					if r.Options.Verbose {
 						gologger.Error().Msgf("%s", err)
