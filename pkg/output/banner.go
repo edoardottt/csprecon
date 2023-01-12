@@ -1,3 +1,9 @@
+/*
+csprecon - Discover new target domains using Content Security Policy
+
+This repository is under MIT License https://github.com/edoardottt/csprecon/blob/main/LICENSE
+*/
+
 package output
 
 import "github.com/projectdiscovery/gologger"
@@ -6,7 +12,7 @@ import "github.com/projectdiscovery/gologger"
 var printed = false
 
 const (
-	Version = "v0.0.4"
+	Version = "v0.0.5"
 	banner  = `    ______________  ________  _________  ____ 
    / ___/ ___/ __ \/ ___/ _ \/ ___/ __ \/ __ \
   / /__(__  ) /_/ / /  /  __/ /__/ /_/ / / / /
