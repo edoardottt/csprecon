@@ -103,7 +103,12 @@ golangci-lint run
 ```
 If there aren't errors, go ahead :)
 
-  
+
+In the news 📰
+-------
+
+- [Hive Five Newsletter by Securibee](https://securib.ee/newsletter/)
+
 License 📝
 -------
 
