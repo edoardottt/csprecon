@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
-	github.com/projectdiscovery/utils v0.0.5
+	github.com/projectdiscovery/utils v0.0.6
 	github.com/stretchr/testify v1.8.1
 )
 
