@@ -41,7 +41,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/projectdiscovery/goflags v0.1.6
-	github.com/projectdiscovery/gologger v1.1.7
+	github.com/projectdiscovery/gologger v1.1.8
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	golang.org/x/net v0.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
