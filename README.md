@@ -9,7 +9,7 @@
 
 <p align="center">
 
-  <a href="https://edoardoottavianelli.it">
+  <a href="https://github.com/edoardottt/csprecon/actions">
       <img src="https://github.com/edoardottt/csprecon/actions/workflows/go.yml/badge.svg" alt="go action">
   </a>
 
