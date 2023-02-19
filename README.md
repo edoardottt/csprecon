@@ -39,6 +39,12 @@
 Install 📡
 ----------
 
+### Using Snap
+```bash
+sudo snap install csprecon
+```
+
+### Using Go
 ```
 go install github.com/edoardottt/csprecon/cmd/csprecon@latest
 ```
