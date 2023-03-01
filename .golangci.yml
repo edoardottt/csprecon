@@ -55,5 +55,5 @@ linters-settings:
 
 issues:
   exclude-rules:
-    - path: pkg/favirecon/db.go
+    - path: pkg/output/banner.go
       text: "should be written without leading space as `//nolint: gochecknoglobals`"
