@@ -78,11 +78,11 @@ Examples :bulb:
 
 Grab all possible results from single domain
 ```bash
-echo https://www.github.com | csprecon
+csprecon -u https://www.github.com
 ```
 
 ```bash
-csprecon -u https://www.github.com
+echo https://www.github.com | csprecon
 ```
 
 Grab all possible results from a list of domains (protocols needed!)
