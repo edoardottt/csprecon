@@ -17,6 +17,8 @@ var (
 	ErrMutexFlags    = errors.New("incompatible flags specified")
 	ErrNoInput       = errors.New("no input specified")
 	ErrNegativeValue = errors.New("must be positive")
+	ErrCidrBadFormat = errors.New("malformed input CIDR")
+	ErrMalformedURL  = errors.New("malformed input URL")
 )
 
 func (options *Options) validateOptions() error {
