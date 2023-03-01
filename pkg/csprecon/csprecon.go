@@ -9,6 +9,7 @@ package csprecon
 import (
 	"bufio"
 	"fmt"
+	"net"
 	"os"
 	"strings"
 	"sync"
@@ -17,6 +18,7 @@ import (
 	"github.com/edoardottt/csprecon/pkg/output"
 	"github.com/edoardottt/golazy"
 	"github.com/projectdiscovery/gologger"
+	"github.com/projectdiscovery/mapcidr"
 	fileutil "github.com/projectdiscovery/utils/file"
 )
 
@@ -73,21 +75,73 @@ func pushInput(r *Runner) {
 	if fileutil.HasStdin() {
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
-			r.Input <- scanner.Text()
+			if r.Options.Cidr {
+				ips, err := handleCidrInput(scanner.Text())
+				if err != nil {
+					gologger.Error().Msg(err.Error())
+				} else {
+					for _, ip := range ips {
+						r.Input <- ip
+					}
+				}
+			} else {
+				r.Input <- scanner.Text()
+			}
 		}
 	}
 
 	if r.Options.FileInput != "" {
 		for _, line := range golazy.RemoveDuplicateValues(golazy.ReadFileLineByLine(r.Options.FileInput)) {
-			r.Input <- line
+			if r.Options.Cidr {
+				ips, err := handleCidrInput(line)
+				if err != nil {
+					gologger.Error().Msg(err.Error())
+				} else {
+					for _, ip := range ips {
+						r.Input <- ip
+					}
+				}
+			} else {
+				r.Input <- line
+			}
 		}
 	}
 
 	if r.Options.Input != "" {
-		r.Input <- r.Options.Input
+		if r.Options.Cidr {
+			ips, err := handleCidrInput(r.Options.Input)
+			if err != nil {
+				gologger.Error().Msg(err.Error())
+			} else {
+				for _, ip := range ips {
+					r.Input <- ip
+				}
+			}
+		} else {
+			r.Input <- r.Options.Input
+		}
 	}
 
 	close(r.Input)
+}
+
+func handleCidrInput(inputCidr string) ([]string, error) {
+	if !isCidr(inputCidr) {
+		return nil, input.ErrCidrBadFormat
+	}
+
+	ips, err := mapcidr.IPAddresses(inputCidr)
+	if err != nil {
+		return nil, err
+	}
+
+	return ips, nil
+}
+
+// isCidr determines if the given ip is a cidr range.
+func isCidr(inputCidr string) bool {
+	_, _, err := net.ParseCIDR(inputCidr)
+	return err == nil
 }
 
 func execute(r *Runner) {
@@ -102,9 +156,18 @@ func execute(r *Runner) {
 			defer r.InWg.Done()
 
 			for value := range r.Input {
+				targetURL, err := PrepareURL(value)
+				if err != nil {
+					if r.Options.Verbose {
+						gologger.Error().Msgf("%s", err)
+					}
+
+					return
+				}
+
 				client := customClient(r.Options.Timeout)
 
-				result, err := CheckCSP(value, r.UserAgent, dregex, client)
+				result, err := CheckCSP(targetURL, r.UserAgent, dregex, client)
 				if err != nil {
 					if r.Options.Verbose {
 						gologger.Error().Msgf("%s", err)

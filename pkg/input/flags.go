@@ -32,6 +32,7 @@ type Options struct {
 	Silent      bool
 	Concurrency int
 	Timeout     int
+	Cidr        bool
 }
 
 // configureOutput configures the output on the screen.
@@ -54,6 +55,7 @@ func ParseOptions() *Options {
 	flagSet.CreateGroup("input", "Input",
 		flagSet.StringVarP(&options.Input, "url", "u", "", `Input domain`),
 		flagSet.StringVarP(&options.FileInput, "list", "l", "", `File containing input domains`),
+		flagSet.BoolVar(&options.Cidr, "cidr", false, `Interpret input as CIDR`),
 	)
 
 	flagSet.CreateGroup("configs", "Configurations",

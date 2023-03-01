@@ -60,6 +60,7 @@ Flags:
 INPUT:
    -u, -url string   Input domain
    -l, -list string  File containing input domains
+   -cidr             Interpret input as CIDR
 
 CONFIGURATIONS:
    -d, -domain string[]  Filter results belonging to these domains (comma separated)
@@ -80,6 +81,10 @@ Grab all possible results from single domain
 csprecon -u https://www.github.com
 ```
 
+```bash
+echo https://www.github.com | csprecon
+```
+
 Grab all possible results from a list of domains (protocols needed!)
 ```bash
 csprecon -l targets.txt
@@ -89,9 +94,14 @@ csprecon -l targets.txt
 cat targets.txt | csprecon
 ```
 
-Grab all possible results belonging to a specific target(s) from a list of domains (protocols needed!)
+Grab all possible results belonging to specific target(s) from a list of domains (protocols needed!)
 ```bash
 cat targets.txt | csprecon -d google.com
+```
+
+Grab all possible results from single CIDR
+```bash
+csprecon -u 192.168.1.0/24 -cidr
 ```
 
 Changelog 📌
