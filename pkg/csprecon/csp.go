@@ -18,17 +18,21 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/edoardottt/golazy"
+	"github.com/projectdiscovery/gologger"
 )
 
 const (
 	TLSHandshakeTimeout = 10
 	KeepAlive           = 30
 	DomainRegex         = `(?i).*[a-z\_\-0-9]+\.[a-z]+`
+	MinURLLength        = 4
 )
 
 // CheckCSP returns the list of domains parsed from a URL found in CSP.
 func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
 	result := []string{}
+
+	gologger.Debug().Msgf("Checking CSP for %s", url)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -118,20 +122,4 @@ func customClient(timeout int) *http.Client {
 	}
 
 	return &client
-}
-
-func CompileRegex(regex string) *regexp.Regexp {
-	r, _ := regexp.Compile(regex)
-
-	return r
-}
-
-func domainOk(input string, domains []string) bool {
-	for _, domain := range domains {
-		if len(input) > len(domain)+1 && input[len(input)-len(domain)-1:] == "."+domain {
-			return true
-		}
-	}
-
-	return false
 }
