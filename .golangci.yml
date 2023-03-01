@@ -52,3 +52,8 @@ linters-settings:
     ignored-numbers:
       - '2'
       - '0644'
+
+issues:
+  exclude-rules:
+    - path: pkg/favirecon/db.go
+      text: "should be written without leading space as `//nolint: gochecknoglobals`"

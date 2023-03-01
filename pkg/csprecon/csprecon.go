@@ -138,7 +138,7 @@ func handleCidrInput(inputCidr string) ([]string, error) {
 	return ips, nil
 }
 
-// isCidr determines if the given ip is a cidr range
+// isCidr determines if the given ip is a cidr range.
 func isCidr(inputCidr string) bool {
 	_, _, err := net.ParseCIDR(inputCidr)
 	return err == nil
