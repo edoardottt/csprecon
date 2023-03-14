@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/projectdiscovery/mapcidr v1.1.0
-	github.com/projectdiscovery/utils v0.0.14
+	github.com/projectdiscovery/utils v0.0.15
 	github.com/stretchr/testify v1.8.2
 )
 
