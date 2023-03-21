@@ -9,7 +9,6 @@ package csprecon
 import (
 	"bufio"
 	"fmt"
-	"net"
 	"os"
 	"strings"
 	"sync"
@@ -18,7 +17,6 @@ import (
 	"github.com/edoardottt/csprecon/pkg/output"
 	"github.com/edoardottt/golazy"
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/mapcidr"
 	fileutil "github.com/projectdiscovery/utils/file"
 )
 
@@ -123,25 +121,6 @@ func pushInput(r *Runner) {
 	}
 
 	close(r.Input)
-}
-
-func handleCidrInput(inputCidr string) ([]string, error) {
-	if !isCidr(inputCidr) {
-		return nil, input.ErrCidrBadFormat
-	}
-
-	ips, err := mapcidr.IPAddresses(inputCidr)
-	if err != nil {
-		return nil, err
-	}
-
-	return ips, nil
-}
-
-// isCidr determines if the given ip is a cidr range.
-func isCidr(inputCidr string) bool {
-	_, _, err := net.ParseCIDR(inputCidr)
-	return err == nil
 }
 
 func execute(r *Runner) {

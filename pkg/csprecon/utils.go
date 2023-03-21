@@ -7,11 +7,13 @@ This repository is under MIT License https://github.com/edoardottt/csprecon/blob
 package csprecon
 
 import (
+	"net"
 	"net/url"
 	"regexp"
 	"strings"
 
 	"github.com/edoardottt/csprecon/pkg/input"
+	"github.com/projectdiscovery/mapcidr"
 )
 
 func CompileRegex(regex string) *regexp.Regexp {
@@ -47,4 +49,23 @@ func PrepareURL(inputURL string) (string, error) {
 	}
 
 	return u.Scheme + "://" + u.Host + u.Path, nil
+}
+
+func handleCidrInput(inputCidr string) ([]string, error) {
+	if !isCidr(inputCidr) {
+		return nil, input.ErrCidrBadFormat
+	}
+
+	ips, err := mapcidr.IPAddresses(inputCidr)
+	if err != nil {
+		return nil, err
+	}
+
+	return ips, nil
+}
+
+// isCidr determines if the given ip is a cidr range.
+func isCidr(inputCidr string) bool {
+	_, _, err := net.ParseCIDR(inputCidr)
+	return err == nil
 }
