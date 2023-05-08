@@ -74,7 +74,7 @@ func pushInput(r *Runner) {
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
 			if r.Options.Cidr {
-				ips, err := handleCidrInput(scanner.Text())
+				ips, err := handleCIDRInput(scanner.Text())
 				if err != nil {
 					gologger.Error().Msg(err.Error())
 				} else {
@@ -91,7 +91,7 @@ func pushInput(r *Runner) {
 	if r.Options.FileInput != "" {
 		for _, line := range golazy.RemoveDuplicateValues(golazy.ReadFileLineByLine(r.Options.FileInput)) {
 			if r.Options.Cidr {
-				ips, err := handleCidrInput(line)
+				ips, err := handleCIDRInput(line)
 				if err != nil {
 					gologger.Error().Msg(err.Error())
 				} else {
@@ -107,7 +107,7 @@ func pushInput(r *Runner) {
 
 	if r.Options.Input != "" {
 		if r.Options.Cidr {
-			ips, err := handleCidrInput(r.Options.Input)
+			ips, err := handleCIDRInput(r.Options.Input)
 			if err != nil {
 				gologger.Error().Msg(err.Error())
 			} else {

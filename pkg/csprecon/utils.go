@@ -51,8 +51,8 @@ func PrepareURL(inputURL string) (string, error) {
 	return u.Scheme + "://" + u.Host + u.Path, nil
 }
 
-func handleCidrInput(inputCidr string) ([]string, error) {
-	if !isCidr(inputCidr) {
+func handleCIDRInput(inputCidr string) ([]string, error) {
+	if !isCIDR(inputCidr) {
 		return nil, input.ErrCidrBadFormat
 	}
 
@@ -64,8 +64,8 @@ func handleCidrInput(inputCidr string) ([]string, error) {
 	return ips, nil
 }
 
-// isCidr determines if the given ip is a cidr range.
-func isCidr(inputCidr string) bool {
+// isCIDR determines if the given ip is a cidr range.
+func isCIDR(inputCidr string) bool {
 	_, _, err := net.ParseCIDR(inputCidr)
 	return err == nil
 }
