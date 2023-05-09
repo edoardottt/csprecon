@@ -64,7 +64,7 @@ INPUT:
 
 CONFIGURATIONS:
    -d, -domain string[]  Filter results belonging to these domains (comma separated)
-   -c, -concurrency int  Concurrency level (default 100)
+   -c, -concurrency int  Concurrency level (default 50)
    -t, -timeout int      Connection timeout in seconds (default 10)
 
 OUTPUT:
