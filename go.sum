@@ -56,8 +56,8 @@ github.com/projectdiscovery/goflags v0.1.8 h1:Urhm2Isq2BdRt8h4h062lHKYXO65RHRjGT
 github.com/projectdiscovery/goflags v0.1.8/go.mod h1:Yxi9tclgwGczzDU65ntrwaIql5cXeTvW5j2WxFuF+Jk=
 github.com/projectdiscovery/gologger v1.1.10 h1:XNRdtzLTdxiFGuK9gutoL752mykzXDoii4P2yDovqck=
 github.com/projectdiscovery/gologger v1.1.10/go.mod h1:VqANHK7qcEq3i6/vV5HNWwdyv2aFPSrlaVDU4Ogrc6U=
-github.com/projectdiscovery/mapcidr v1.1.1 h1:68Xvw9cKugNeAVxHE3Nl1Ej26nm1taWq6e1WPXpluc0=
-github.com/projectdiscovery/mapcidr v1.1.1/go.mod h1:yyp9ghqmmC0+r5DySgDBXE4cf2QW8SBloVESCteWiAg=
+github.com/projectdiscovery/mapcidr v1.1.2 h1:Mmq/nPqvVc7fjvH/kJVK0IBOny/LrJIxZ4tQsLPCrsA=
+github.com/projectdiscovery/mapcidr v1.1.2/go.mod h1:Aoq0x/wJl6KDbtQ8OcPkjIDCqx2iEyx5ty1nzso8wXM=
 github.com/projectdiscovery/utils v0.0.32 h1:TjUxFmRG9hiV6jauYsnIRiy08lTgGHGi8avstedNGXw=
 github.com/projectdiscovery/utils v0.0.32/go.mod h1:SaOpcZ2dJ47NE3t4R/YC2XpUyRZC6v5k8sj2TFro6+k=
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
