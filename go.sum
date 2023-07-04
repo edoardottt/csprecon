@@ -62,8 +62,8 @@ github.com/projectdiscovery/gologger v1.1.10 h1:XNRdtzLTdxiFGuK9gutoL752mykzXDoi
 github.com/projectdiscovery/gologger v1.1.10/go.mod h1:VqANHK7qcEq3i6/vV5HNWwdyv2aFPSrlaVDU4Ogrc6U=
 github.com/projectdiscovery/mapcidr v1.1.2 h1:Mmq/nPqvVc7fjvH/kJVK0IBOny/LrJIxZ4tQsLPCrsA=
 github.com/projectdiscovery/mapcidr v1.1.2/go.mod h1:Aoq0x/wJl6KDbtQ8OcPkjIDCqx2iEyx5ty1nzso8wXM=
-github.com/projectdiscovery/utils v0.0.40-0.20230627061640-8ec2b35f851c h1:mNV/VSMi9wVpq3gcz4km2oUml9M+La20GaFoJPe3Ils=
-github.com/projectdiscovery/utils v0.0.40-0.20230627061640-8ec2b35f851c/go.mod h1:rrd8dTBuKEScNMLgs1Xiu8rPCVeR0QTzmRcQ5iM3ymo=
+github.com/projectdiscovery/utils v0.0.40 h1:vChjk6PnSb6+nUaP3/GS8LjbGGlrUpFiZBbeoBa9Sww=
+github.com/projectdiscovery/utils v0.0.40/go.mod h1:rrd8dTBuKEScNMLgs1Xiu8rPCVeR0QTzmRcQ5iM3ymo=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 github.com/rogpeppe/go-internal v1.10.0/go.mod h1:UQnix2H7Ngw/k4C5ijL5+65zddjncjaFoBhdsK/akog=
