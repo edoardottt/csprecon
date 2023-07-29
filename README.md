@@ -40,11 +40,13 @@ Install 📡
 ----------
 
 ### Using Snap
+
 ```bash
 sudo snap install csprecon
 ```
 
 ### Using Go
+
 ```
 go install github.com/edoardottt/csprecon/cmd/csprecon@latest
 ```
@@ -73,10 +75,11 @@ OUTPUT:
    -s, -silent         Silent output. Print only results
 ```
 
-Examples :bulb:
+Examples :bulb
 ----------
 
 Grab all possible results from single domain
+
 ```bash
 csprecon -u https://www.github.com
 ```
@@ -86,6 +89,7 @@ echo https://www.github.com | csprecon
 ```
 
 Grab all possible results from a list of domains (protocols needed!)
+
 ```bash
 csprecon -l targets.txt
 ```
@@ -95,17 +99,20 @@ cat targets.txt | csprecon
 ```
 
 Grab all possible results belonging to specific target(s) from a list of domains (protocols needed!)
+
 ```bash
 cat targets.txt | csprecon -d google.com
 ```
 
 Grab all possible results from single CIDR
+
 ```bash
 csprecon -u 192.168.1.0/24 -cidr
 ```
 
 Changelog 📌
 -------
+
 Detailed changes for each release are documented in the [release notes](https://github.com/edoardottt/csprecon/releases).
 
 Contributing 🛠
@@ -114,11 +121,12 @@ Contributing 🛠
 Just open an [issue](https://github.com/edoardottt/csprecon/issues) / [pull request](https://github.com/edoardottt/csprecon/pulls).
 
 Before opening a pull request, download [golangci-lint](https://golangci-lint.run/usage/install/) and run
+
 ```bash
 golangci-lint run
 ```
-If there aren't errors, go ahead :)
 
+If there aren't errors, go ahead :)
 
 In the news 📰
 -------
