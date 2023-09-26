@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/edoardottt/golazy v0.1.3-dev
-	github.com/projectdiscovery/goflags v0.1.20
+	github.com/projectdiscovery/goflags v0.1.21
 	github.com/projectdiscovery/gologger v1.1.11
 	github.com/projectdiscovery/mapcidr v1.1.9
 	github.com/projectdiscovery/utils v0.0.56
