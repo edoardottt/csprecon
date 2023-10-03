@@ -8,7 +8,7 @@ require (
 	github.com/projectdiscovery/goflags v0.1.21
 	github.com/projectdiscovery/gologger v1.1.11
 	github.com/projectdiscovery/mapcidr v1.1.10
-	github.com/projectdiscovery/utils v0.0.56
+	github.com/projectdiscovery/utils v0.0.57
 	github.com/stretchr/testify v1.8.4
 )
 
