@@ -75,7 +75,7 @@ OUTPUT:
    -s, -silent         Silent output. Print only results
 ```
 
-Examples :bulb
+Examples 💡
 ----------
 
 Grab all possible results from single domain
