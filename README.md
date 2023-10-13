@@ -26,7 +26,7 @@
 <p align="center">
   <a href="#install-">Install</a> •
   <a href="#get-started-">Get Started</a> •
-  <a href="#examples-bulb">Examples</a> •
+  <a href="#examples-">Examples</a> •
   <a href="#changelog-">Changelog</a> •
   <a href="#contributing-">Contributing</a> •
   <a href="#license-">License</a>
