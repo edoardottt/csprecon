@@ -5,10 +5,10 @@ go 1.21
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/edoardottt/golazy v0.1.3-dev
-	github.com/projectdiscovery/goflags v0.1.28
+	github.com/projectdiscovery/goflags v0.1.29
 	github.com/projectdiscovery/gologger v1.1.11
-	github.com/projectdiscovery/mapcidr v1.1.15
-	github.com/projectdiscovery/utils v0.0.64
+	github.com/projectdiscovery/mapcidr v1.1.16
+	github.com/projectdiscovery/utils v0.0.65
 	github.com/stretchr/testify v1.8.4
 )
 
