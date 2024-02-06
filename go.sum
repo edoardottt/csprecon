@@ -18,8 +18,8 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 h1:iFaUwBSo5Svw6L7HYpRu/0lE3e0BaElwnNO1qkNQxBY=
 github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5/go.mod h1:qssHWj60/X5sZFNxpG4HBPDHVqxNm4DfnCKgrbZOT+s=
 github.com/dsnet/golib v0.0.0-20171103203638-1ea166775780/go.mod h1:Lj+Z9rebOhdfkVLjJ8T6VcRQv3SXugXy999NBtR9aFY=
-github.com/edoardottt/golazy v0.1.3-dev h1:RRnMtrc1Z5xkFXOfsXQNTN7qwmjcLZw49li7Bn5xWVA=
-github.com/edoardottt/golazy v0.1.3-dev/go.mod h1:uZRa3TRYvQSxmbAc7O9+3RelkMu+ACbKiUoy+uPsGVM=
+github.com/edoardottt/golazy v0.1.4 h1:TsRFfTpOabiyTyiB2Dm/aR4id5r+ILOxNjYOSkeq8ec=
+github.com/edoardottt/golazy v0.1.4/go.mod h1:uZRa3TRYvQSxmbAc7O9+3RelkMu+ACbKiUoy+uPsGVM=
 github.com/golang/snappy v0.0.2/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
 github.com/golang/snappy v0.0.4 h1:yAGX7huGHXlcLOEtBnF4w7FQwA26wojNCwOYAEhLjQM=
 github.com/golang/snappy v0.0.4/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
