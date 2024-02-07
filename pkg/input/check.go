@@ -31,7 +31,11 @@ func (options *Options) validateOptions() error {
 	}
 
 	if options.Concurrency <= 0 {
-		return fmt.Errorf("%w", ErrNegativeValue)
+		return fmt.Errorf("concurrency: %w", ErrNegativeValue)
+	}
+
+	if options.RateLimit != 0 && options.RateLimit <= 0 {
+		return fmt.Errorf("rate limit: %w", ErrNegativeValue)
 	}
 
 	return nil
