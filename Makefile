@@ -16,7 +16,7 @@ lint:
 	@golangci-lint run
 
 linux:
-	@go build -o csprecon ./main.go
+	@go build -o csprecon ./cmd/csprecon
 	@sudo mv csprecon /usr/local/bin/
 	@echo "Done."
 

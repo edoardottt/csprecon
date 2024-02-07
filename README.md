@@ -41,13 +41,13 @@ Install 📡
 
 ### Using Snap
 
-```bash
+```console
 sudo snap install csprecon
 ```
 
 ### Using Go
 
-```
+```console
 go install github.com/edoardottt/csprecon/cmd/csprecon@latest
 ```
 
@@ -68,6 +68,7 @@ CONFIGURATIONS:
    -d, -domain string[]  Filter results belonging to these domains (comma separated)
    -c, -concurrency int  Concurrency level (default 50)
    -t, -timeout int      Connection timeout in seconds (default 10)
+   -rl, -rate-limit int  Set a rate limit (per second)
 
 OUTPUT:
    -o, -output string  File to write output results
@@ -108,6 +109,12 @@ Grab all possible results from single CIDR
 
 ```bash
 csprecon -u 192.168.1.0/24 -cidr
+```
+
+Set a rate limit of 10 requests per second
+
+```bash
+cat targets.txt | csprecon -rl 10
 ```
 
 Changelog 📌

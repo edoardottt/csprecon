@@ -127,6 +127,7 @@ func execute(r *Runner) {
 	defer r.InWg.Done()
 
 	dregex := CompileRegex(DomainRegex)
+	rl := rateLimiter(r)
 
 	for i := 0; i < r.Options.Concurrency; i++ {
 		r.InWg.Add(1)
@@ -143,6 +144,8 @@ func execute(r *Runner) {
 
 					return
 				}
+
+				rl.Take()
 
 				client := customClient(r.Options.Timeout)
 
