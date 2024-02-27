@@ -8,11 +8,16 @@ require (
 	github.com/projectdiscovery/goflags v0.1.41
 	github.com/projectdiscovery/gologger v1.1.12
 	github.com/projectdiscovery/mapcidr v1.1.16
-	github.com/projectdiscovery/utils v0.0.79
+	github.com/projectdiscovery/utils v0.0.81
 	github.com/stretchr/testify v1.8.4
 )
 
-require github.com/benbjohnson/clock v1.3.0 // indirect
+require (
+	github.com/benbjohnson/clock v1.3.0 // indirect
+	github.com/tidwall/gjson v1.14.4 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
+)
 
 require (
 	github.com/andybalholm/brotli v1.0.6 // indirect
