@@ -39,13 +39,19 @@
 Install 📡
 ----------
 
-### Using Snap
+### Homebrew
+
+```console
+brew install csprecon
+```
+
+### Snap
 
 ```console
 sudo snap install csprecon
 ```
 
-### Using Go
+### Go
 
 ```console
 go install github.com/edoardottt/csprecon/cmd/csprecon@latest
