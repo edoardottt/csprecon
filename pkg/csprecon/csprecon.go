@@ -66,6 +66,7 @@ func (r *Runner) Run() {
 	r.InWg.Wait()
 
 	close(r.Output)
+	close(r.JSONOutput)
 	r.OutWg.Wait()
 }
 
