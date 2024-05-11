@@ -43,6 +43,7 @@ func PrepareJSONOutput(out []string) (url string, result []string, err error) {
 	if len(out) == 0 {
 		return "", []string{}, ErrEmptyResult
 	}
+
 	if len(out) == 1 {
 		return out[len(out)-1], []string{}, nil
 	} else {

@@ -163,6 +163,7 @@ func execute(r *Runner) {
 				if r.Options.JSON {
 					if len(r.Options.Domain) != 0 {
 						tempResult := []string{}
+
 						for _, res := range result {
 							if domainOk(res, r.Options.Domain) {
 								tempResult = append(tempResult, res)
