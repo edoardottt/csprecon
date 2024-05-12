@@ -60,26 +60,6 @@ func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 func ParseCSP(input string, r *regexp.Regexp) []string {
 	result := []string{}
 
-	/*
-
-		splitted := strings.Split(input, ";")
-
-		for _, elem := range splitted {
-			spaceSplit := strings.Split(elem, " ")
-			for _, spaceElem := range spaceSplit {
-				if r.Match([]byte(spaceElem)) {
-					if strings.Contains(spaceElem, "://") {
-						spaceElem, err = golazy.GetHost(spaceElem)
-						if err != nil {
-							continue
-						}
-					}
-					result = append(result, spaceElem)
-				}
-			}
-		}
-	*/
-
 	matches := r.FindAllStringSubmatch(input, -1)
 	for _, match := range matches {
 		result = append(result, match...)
