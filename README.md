@@ -80,6 +80,7 @@ OUTPUT:
    -o, -output string  File to write output results
    -v, -verbose        Verbose output
    -s, -silent         Silent output. Print only results
+   -j, -json           JSON output
 ```
 
 Examples 💡
@@ -121,6 +122,12 @@ Set a rate limit of 10 requests per second
 
 ```bash
 cat targets.txt | csprecon -rl 10
+```
+
+JSON Output
+
+```bash
+cat targets.txt | csprecon -j
 ```
 
 Changelog 📌

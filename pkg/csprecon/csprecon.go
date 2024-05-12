@@ -21,14 +21,15 @@ import (
 )
 
 type Runner struct {
-	Input     chan string
-	Output    chan string
-	Result    output.Result
-	UserAgent string
-	InWg      *sync.WaitGroup
-	OutWg     *sync.WaitGroup
-	Options   input.Options
-	OutMutex  *sync.Mutex
+	Input      chan string
+	Output     chan string
+	JSONOutput chan []string
+	Result     output.Result
+	UserAgent  string
+	InWg       *sync.WaitGroup
+	OutWg      *sync.WaitGroup
+	Options    input.Options
+	OutMutex   *sync.Mutex
 }
 
 func New(options *input.Options) Runner {
@@ -40,14 +41,15 @@ func New(options *input.Options) Runner {
 	}
 
 	return Runner{
-		Input:     make(chan string, options.Concurrency),
-		Output:    make(chan string, options.Concurrency),
-		Result:    output.New(),
-		UserAgent: golazy.GenerateRandomUserAgent(),
-		InWg:      &sync.WaitGroup{},
-		OutWg:     &sync.WaitGroup{},
-		Options:   *options,
-		OutMutex:  &sync.Mutex{},
+		Input:      make(chan string, options.Concurrency),
+		Output:     make(chan string, options.Concurrency),
+		JSONOutput: make(chan []string, options.Concurrency),
+		Result:     output.New(),
+		UserAgent:  golazy.GenerateRandomUserAgent(),
+		InWg:       &sync.WaitGroup{},
+		OutWg:      &sync.WaitGroup{},
+		Options:    *options,
+		OutMutex:   &sync.Mutex{},
 	}
 }
 
@@ -64,6 +66,7 @@ func (r *Runner) Run() {
 	r.InWg.Wait()
 
 	close(r.Output)
+	close(r.JSONOutput)
 	r.OutWg.Wait()
 }
 
@@ -158,14 +161,29 @@ func execute(r *Runner) {
 					return
 				}
 
-				for _, res := range result {
-					if resTrimmed := strings.TrimSpace(res); resTrimmed != "" {
-						if len(r.Options.Domain) != 0 {
-							if domainOk(resTrimmed, r.Options.Domain) {
+				if r.Options.JSON {
+					if len(r.Options.Domain) != 0 {
+						tempResult := []string{}
+
+						for _, res := range result {
+							if DomainOk(res, r.Options.Domain) {
+								tempResult = append(tempResult, res)
+							}
+						}
+						r.JSONOutput <- append(tempResult, targetURL)
+					} else {
+						r.JSONOutput <- append(result, targetURL)
+					}
+				} else {
+					for _, res := range result {
+						if resTrimmed := strings.TrimSpace(res); resTrimmed != "" {
+							if len(r.Options.Domain) != 0 {
+								if DomainOk(resTrimmed, r.Options.Domain) {
+									r.Output <- resTrimmed
+								}
+							} else {
 								r.Output <- resTrimmed
 							}
-						} else {
-							r.Output <- resTrimmed
 						}
 					}
 				}
@@ -177,11 +195,19 @@ func execute(r *Runner) {
 func pullOutput(r *Runner) {
 	defer r.OutWg.Done()
 
-	for o := range r.Output {
-		if !r.Result.Printed(o) {
+	if r.Options.JSON {
+		for o := range r.JSONOutput {
 			r.OutWg.Add(1)
 
-			go writeOutput(r.OutWg, r.OutMutex, &r.Options, o)
+			go writeJSONOutput(r.OutWg, r.OutMutex, &r.Options, o)
+		}
+	} else {
+		for o := range r.Output {
+			if !r.Result.Printed(o) {
+				r.OutWg.Add(1)
+
+				go writeOutput(r.OutWg, r.OutMutex, &r.Options, o)
+			}
 		}
 	}
 }
@@ -209,4 +235,39 @@ func writeOutput(wg *sync.WaitGroup, m *sync.Mutex, options *input.Options, o st
 	m.Unlock()
 
 	fmt.Println(o)
+}
+
+func writeJSONOutput(wg *sync.WaitGroup, m *sync.Mutex, options *input.Options, o []string) {
+	defer wg.Done()
+
+	if options.FileOutput != "" && options.Output == nil {
+		file, err := os.OpenFile(options.FileOutput, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
+		if err != nil {
+			gologger.Fatal().Msg(err.Error())
+		}
+
+		options.Output = file
+	}
+
+	url, result, err := output.PrepareJSONOutput(o)
+	if err != nil {
+		gologger.Fatal().Msg(err.Error())
+	}
+
+	out, err := output.FormatJSON(url, result)
+	if err != nil {
+		gologger.Fatal().Msg(err.Error())
+	}
+
+	m.Lock()
+
+	if options.Output != nil {
+		if _, err := options.Output.Write(append(out, byte('\n'))); err != nil && options.Verbose {
+			gologger.Fatal().Msg(err.Error())
+		}
+	}
+
+	m.Unlock()
+
+	fmt.Println(string(out))
 }

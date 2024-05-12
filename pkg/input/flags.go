@@ -31,6 +31,7 @@ type Options struct {
 	Verbose     bool
 	Output      io.Writer
 	Silent      bool
+	JSON        bool
 	Concurrency int
 	Timeout     int
 	Cidr        bool
@@ -72,6 +73,7 @@ func ParseOptions() *Options {
 		flagSet.StringVarP(&options.FileOutput, "output", "o", "", `File to write output results`),
 		flagSet.BoolVarP(&options.Verbose, "verbose", "v", false, `Verbose output`),
 		flagSet.BoolVarP(&options.Silent, "silent", "s", false, `Silent output. Print only results`),
+		flagSet.BoolVarP(&options.JSON, "json", "j", false, `JSON output`),
 	)
 
 	if help() || noArgs() {
