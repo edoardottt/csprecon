@@ -166,7 +166,7 @@ func execute(r *Runner) {
 						tempResult := []string{}
 
 						for _, res := range result {
-							if domainOk(res, r.Options.Domain) {
+							if DomainOk(res, r.Options.Domain) {
 								tempResult = append(tempResult, res)
 							}
 						}
@@ -178,7 +178,7 @@ func execute(r *Runner) {
 					for _, res := range result {
 						if resTrimmed := strings.TrimSpace(res); resTrimmed != "" {
 							if len(r.Options.Domain) != 0 {
-								if domainOk(resTrimmed, r.Options.Domain) {
+								if DomainOk(resTrimmed, r.Options.Domain) {
 									r.Output <- resTrimmed
 								}
 							} else {
@@ -262,7 +262,7 @@ func writeJSONOutput(wg *sync.WaitGroup, m *sync.Mutex, options *input.Options, 
 	m.Lock()
 
 	if options.Output != nil {
-		if _, err := options.Output.Write(out); err != nil && options.Verbose {
+		if _, err := options.Output.Write(append(out, byte('\n'))); err != nil && options.Verbose {
 			gologger.Fatal().Msg(err.Error())
 		}
 	}

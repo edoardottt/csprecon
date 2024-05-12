@@ -39,6 +39,7 @@ func FormatJSON(url string, result []string) ([]byte, error) {
 	return jsonOutput, nil
 }
 
+// PrepareJSONOutput returns the target URL and the findings.
 func PrepareJSONOutput(out []string) (url string, result []string, err error) {
 	if len(out) == 0 {
 		return "", []string{}, ErrEmptyResult
@@ -47,6 +48,6 @@ func PrepareJSONOutput(out []string) (url string, result []string, err error) {
 	if len(out) == 1 {
 		return out[len(out)-1], []string{}, nil
 	} else {
-		return out[len(out)-1], out[0 : len(out)-2], nil
+		return out[len(out)-1], out[0 : len(out)-1], nil
 	}
 }
