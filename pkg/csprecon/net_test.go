@@ -67,3 +67,56 @@ func TestPrepareURL(t *testing.T) {
 		})
 	}
 }
+
+func TestDomainOk(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		domains []string
+		want    bool
+	}{
+		{
+			name:    "empty",
+			input:   "",
+			domains: []string{},
+			want:    false,
+		},
+		{
+			name:    "empty input",
+			input:   "",
+			domains: []string{"ciao.com", "google.com"},
+			want:    false,
+		},
+		{
+			name:    "empty domains",
+			input:   "google.com",
+			domains: []string{},
+			want:    false,
+		},
+		{
+			name:    "domain ok",
+			input:   "google.com",
+			domains: []string{"ciao.com", "google.com"},
+			want:    true,
+		},
+		{
+			name:    "subdomain ok",
+			input:   "google.com",
+			domains: []string{"ciao.com", "google.com", "dc.google.com"},
+			want:    true,
+		},
+
+		{
+			name:    "subdomain ok 2",
+			input:   "google.com",
+			domains: []string{"ciao.com", "google.com", "dc.*.google.com"},
+			want:    true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := csprecon.DomainOk(tt.input, tt.domains)
+			require.Equal(t, tt.want, got)
+		})
+	}
+}

@@ -13,7 +13,6 @@ import (
 	"net"
 	"net/http"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -24,7 +23,7 @@ import (
 const (
 	TLSHandshakeTimeout = 10
 	KeepAlive           = 30
-	DomainRegex         = `(?i).*[a-z\_\-0-9]+\.[a-z]+`
+	DomainRegex         = `(?i)(?:[_a-z0-9\*](?:[_a-z0-9-\*]{0,61}[a-z0-9])?\.)+(?:[a-z](?:[a-z0-9-]{0,61}[a-z0-9]))+`
 	MinURLLength        = 4
 )
 
@@ -51,10 +50,8 @@ func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 	headerCSP := ParseCSP(resp.Header.Get("Content-Security-Policy"), rCSP)
 	result = append(result, headerCSP...)
 
-	if len(headerCSP) == 0 {
-		bodyCSP := ParseBodyCSP(resp.Body, rCSP)
-		result = append(result, bodyCSP...)
-	}
+	bodyCSP := ParseBodyCSP(resp.Body, rCSP)
+	result = append(result, bodyCSP...)
 
 	return result, nil
 }
@@ -63,23 +60,29 @@ func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 func ParseCSP(input string, r *regexp.Regexp) []string {
 	result := []string{}
 
-	var err error
+	/*
 
-	splitted := strings.Split(input, ";")
+		splitted := strings.Split(input, ";")
 
-	for _, elem := range splitted {
-		spaceSplit := strings.Split(elem, " ")
-		for _, spaceElem := range spaceSplit {
-			if r.Match([]byte(spaceElem)) {
-				if strings.Contains(spaceElem, "://") {
-					spaceElem, err = golazy.GetHost(spaceElem)
-					if err != nil {
-						continue
+		for _, elem := range splitted {
+			spaceSplit := strings.Split(elem, " ")
+			for _, spaceElem := range spaceSplit {
+				if r.Match([]byte(spaceElem)) {
+					if strings.Contains(spaceElem, "://") {
+						spaceElem, err = golazy.GetHost(spaceElem)
+						if err != nil {
+							continue
+						}
 					}
+					result = append(result, spaceElem)
 				}
-				result = append(result, spaceElem)
 			}
 		}
+	*/
+
+	matches := r.FindAllStringSubmatch(input, -1)
+	for _, match := range matches {
+		result = append(result, match...)
 	}
 
 	return golazy.RemoveDuplicateValues(result)

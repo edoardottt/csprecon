@@ -16,15 +16,21 @@ import (
 	"github.com/projectdiscovery/mapcidr"
 )
 
+// CompileRegex.
 func CompileRegex(regex string) *regexp.Regexp {
 	r, _ := regexp.Compile(regex)
 
 	return r
 }
 
-func domainOk(input string, domains []string) bool {
+// DomainOk checks domains filtering based on input.
+func DomainOk(input string, domains []string) bool {
+	if len(input) == 0 || len(domains) == 0 {
+		return false
+	}
+
 	for _, domain := range domains {
-		if len(input) > len(domain)+1 && input[len(input)-len(domain)-1:] == "."+domain {
+		if len(domain) >= len(input) && domain[len(domain)-len(input):] == input {
 			return true
 		}
 	}
