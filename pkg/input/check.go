@@ -9,6 +9,7 @@ package input
 import (
 	"errors"
 	"fmt"
+	"net/url"
 
 	fileutil "github.com/projectdiscovery/utils/file"
 )
@@ -38,5 +39,19 @@ func (options *Options) validateOptions() error {
 		return fmt.Errorf("rate limit: %w", ErrNegativeValue)
 	}
 
+	if options.Proxy != "" && !checkProxy(options.Proxy) {
+		_, err := url.Parse(options.Proxy)
+		return fmt.Errorf("proxy URL: %w", err)
+	}
+
 	return nil
+}
+
+func checkProxy(proxy string) bool {
+	if len(proxy) == 0 {
+		return false
+	}
+
+	_, err := url.Parse(proxy)
+	return err == nil
 }
