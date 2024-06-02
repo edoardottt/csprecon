@@ -141,16 +141,19 @@ func execute(r *Runner) {
 			for value := range r.Input {
 				targetURL, err := PrepareURL(value)
 				if err != nil {
-					if r.Options.Verbose {
-						gologger.Error().Msgf("%s", err)
-					}
+					gologger.Error().Msgf("%s", err)
 
 					return
 				}
 
 				rl.Take()
 
-				client := customClient(r.Options.Timeout)
+				client, err := customClient(&r.Options)
+				if err != nil {
+					gologger.Error().Msgf("%s", err)
+
+					return
+				}
 
 				result, err := CheckCSP(targetURL, r.UserAgent, dregex, client)
 				if err != nil {

@@ -36,6 +36,7 @@ type Options struct {
 	Timeout     int
 	Cidr        bool
 	RateLimit   int
+	Proxy       string
 }
 
 // configureOutput configures the output on the screen.
@@ -66,6 +67,7 @@ func ParseOptions() *Options {
 		flagSet.IntVarP(&options.Concurrency, "concurrency", "c", DefaultConcurrency, `Concurrency level`),
 		flagSet.IntVarP(&options.Timeout, "timeout", "t", DefaultTimeout, `Connection timeout in seconds`),
 		flagSet.IntVarP(&options.RateLimit, "rate-limit", "rl", DefaultRateLimit, `Set a rate limit (per second)`),
+		flagSet.StringVarP(&options.Proxy, "proxy", "px", "", `Set a proxy server (URL)`),
 	)
 
 	// Output

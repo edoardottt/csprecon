@@ -75,6 +75,7 @@ CONFIGURATIONS:
    -c, -concurrency int  Concurrency level (default 50)
    -t, -timeout int      Connection timeout in seconds (default 10)
    -rl, -rate-limit int  Set a rate limit (per second)
+   -px, -proxy string    Set a proxy server (URL)
 
 OUTPUT:
    -o, -output string  File to write output results
@@ -128,6 +129,12 @@ JSON Output
 
 ```bash
 cat targets.txt | csprecon -j
+```
+
+Use a Proxy
+
+```bash
+cat targets.txt | csprecon -px http://127.0.0.1:8080
 ```
 
 Changelog 📌

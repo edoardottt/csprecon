@@ -12,10 +12,12 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"regexp"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/edoardottt/csprecon/pkg/input"
 	"github.com/edoardottt/golazy"
 	"github.com/projectdiscovery/gologger"
 )
@@ -88,21 +90,34 @@ func ParseBodyCSP(body io.Reader, rCSP *regexp.Regexp) []string {
 	return result
 }
 
-func customClient(timeout int) *http.Client {
+func customClient(options *input.Options) (*http.Client, error) {
 	transport := http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		Proxy:           http.ProxyFromEnvironment,
 		Dial: (&net.Dialer{
-			Timeout:   time.Duration(timeout) * time.Second,
+			Timeout:   time.Duration(options.Timeout) * time.Second,
 			KeepAlive: KeepAlive * time.Second,
 		}).Dial,
 		TLSHandshakeTimeout: TLSHandshakeTimeout * time.Second,
 	}
 
-	client := http.Client{
-		Transport: &transport,
-		Timeout:   time.Duration(timeout) * time.Second,
+	if options.Proxy != "" {
+		u, err := url.Parse(options.Proxy)
+		if err != nil {
+			return nil, err
+		}
+
+		transport.Proxy = http.ProxyURL(u)
+
+		if options.Verbose {
+			gologger.Debug().Msgf("Using Proxy %s", options.Proxy)
+		}
 	}
 
-	return &client
+	client := http.Client{
+		Transport: &transport,
+		Timeout:   time.Duration(options.Timeout) * time.Second,
+	}
+
+	return &client, nil
 }
