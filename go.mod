@@ -10,7 +10,7 @@ require (
 	github.com/projectdiscovery/goflags v0.1.62
 	github.com/projectdiscovery/gologger v1.1.18
 	github.com/projectdiscovery/mapcidr v1.1.34
-	github.com/projectdiscovery/utils v0.2.3
+	github.com/projectdiscovery/utils v0.2.4
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/ratelimit v0.3.1
 )
