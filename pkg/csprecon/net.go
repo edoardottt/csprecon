@@ -30,7 +30,7 @@ func DomainOk(input string, domains []string) bool {
 	}
 
 	for _, domain := range domains {
-		if len(domain) >= len(input) && domain[len(domain)-len(input):] == input {
+		if len(input) >= len(domain) && input[len(input)-len(domain):] == domain {
 			return true
 		}
 	}
