@@ -71,8 +71,8 @@ github.com/projectdiscovery/gologger v1.1.24 h1:TmA4k9sA6ZvfyRnprZKQ0Uq34g//u5R9
 github.com/projectdiscovery/gologger v1.1.24/go.mod h1:JA0JMJ+ply+J2wD062TN4h85thm6/28jAlrntwccKVU=
 github.com/projectdiscovery/mapcidr v1.1.34 h1:udr83vQ7oz3kEOwlsU6NC6o08leJzSDQtls1wmXN/kM=
 github.com/projectdiscovery/mapcidr v1.1.34/go.mod h1:1+1R6OkKSAKtWDXE9RvxXtXPoajXTYX0eiEdkqlhQqQ=
-github.com/projectdiscovery/utils v0.2.9 h1:QDhKUC7nX6O6IRoaSWpQ+bzVn9Pq346386zVbOQrXlM=
-github.com/projectdiscovery/utils v0.2.9/go.mod h1:nVnY7qVu5tkN95BBm0rUkzPsfiiRozI7aJ2Gszu+WFM=
+github.com/projectdiscovery/utils v0.2.10 h1:MFx9pAaSyYGjXNi46mdAD7ceSZ80E0AGeuBj8fXaAF4=
+github.com/projectdiscovery/utils v0.2.10/go.mod h1:jvTckFUQxZSiJrhACUuU63tqtd0tdBu3ng3QUVm/Ce0=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d h1:hrujxIzL1woJ7AwssoOcM/tq5JjjG2yYOc8odClEiXA=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
