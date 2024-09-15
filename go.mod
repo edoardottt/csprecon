@@ -1,8 +1,8 @@
 module github.com/edoardottt/csprecon
 
-go 1.21
+go 1.23
 
-toolchain go1.21.9
+toolchain go1.23.1
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.2
