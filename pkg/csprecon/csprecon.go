@@ -20,6 +20,10 @@ import (
 	fileutil "github.com/projectdiscovery/utils/file"
 )
 
+const (
+	DefaultFilePermission = 0644
+)
+
 type Runner struct {
 	Input      chan string
 	Output     chan string
@@ -219,7 +223,7 @@ func writeOutput(wg *sync.WaitGroup, m *sync.Mutex, options *input.Options, o st
 	defer wg.Done()
 
 	if options.FileOutput != "" && options.Output == nil {
-		file, err := os.OpenFile(options.FileOutput, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
+		file, err := os.OpenFile(options.FileOutput, os.O_CREATE|os.O_RDWR|os.O_APPEND, DefaultFilePermission)
 		if err != nil {
 			gologger.Fatal().Msg(err.Error())
 		}
@@ -244,7 +248,7 @@ func writeJSONOutput(wg *sync.WaitGroup, m *sync.Mutex, options *input.Options, 
 	defer wg.Done()
 
 	if options.FileOutput != "" && options.Output == nil {
-		file, err := os.OpenFile(options.FileOutput, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
+		file, err := os.OpenFile(options.FileOutput, os.O_CREATE|os.O_RDWR|os.O_APPEND, DefaultFilePermission)
 		if err != nil {
 			gologger.Fatal().Msg(err.Error())
 		}

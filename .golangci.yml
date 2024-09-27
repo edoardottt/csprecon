@@ -5,26 +5,26 @@ linters:
   enable:
     - asciicheck
     - bodyclose
+    - copyloopvar
     - dogsled
     - dupl
+    - err113
     - errcheck
     - exhaustive
-    - exportloopref
     - gochecknoglobals
     - gochecknoinits
     - goconst
     - gocritic
     - godot
     - godox
-    - goerr113
     - goheader
-    - gomnd
     - gomodguard
     - goprintffuncname
     - gosimple
     - govet
     - ineffassign
     - misspell
+    - mnd
     - nakedret
     - nolintlint
     - prealloc
