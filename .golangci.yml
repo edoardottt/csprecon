@@ -45,13 +45,6 @@ linters-settings:
     strict-append: false
     enforce-err-cuddling: true
 
-  gomnd:
-    # Values always ignored: "1", "1.0", "0" and "0.0"
-    # Default: []
-    ignored-numbers:
-      - '2'
-      - '0644'
-
 issues:
   exclude-rules:
     - path: pkg/output/banner.go
