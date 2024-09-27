@@ -52,6 +52,9 @@ func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 	headerCSP := ParseCSP(resp.Header.Get("Content-Security-Policy"), rCSP)
 	result = append(result, headerCSP...)
 
+	headerCSP = ParseCSP(resp.Header.Get("Content-Security-Policy-Report-Only"), rCSP)
+	result = append(result, headerCSP...)
+
 	bodyCSP := ParseBodyCSP(resp.Body, rCSP)
 	result = append(result, bodyCSP...)
 

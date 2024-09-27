@@ -21,6 +21,7 @@ const (
 	DefaultTimeout     = 10
 	DefaultConcurrency = 50
 	DefaultRateLimit   = 0
+	DefaultNoFlags     = 2
 )
 
 type Options struct {
@@ -114,5 +115,5 @@ func help() bool {
 
 func noArgs() bool {
 	// User passed no flag.
-	return len(os.Args) < 2
+	return len(os.Args) < DefaultNoFlags
 }
