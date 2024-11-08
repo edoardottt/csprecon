@@ -23,7 +23,7 @@ const (
 func ShowBanner() {
 	if !printed {
 		gologger.Print().Msgf("%s%s\n\n", banner, Version)
-		gologger.Print().Msgf("\t\t@edoardottt, https://www.edoardoottavianelli.it/\n")
+		gologger.Print().Msgf("\t\t@edoardottt, https://edoardottt.com/\n")
 		gologger.Print().Msgf("\t\t             https://github.com/edoardottt/\n\n")
 
 		printed = true
