@@ -166,4 +166,4 @@ License 📝
 -------
 
 This repository is under [MIT License](https://github.com/edoardottt/csprecon/blob/main/LICENSE).  
-[edoardoottavianelli.it](https://www.edoardoottavianelli.it) to contact me.
+[edoardottt.com](https://edoardottt.com/) to contact me.
