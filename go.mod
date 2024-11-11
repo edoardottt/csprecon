@@ -8,7 +8,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.0
 	github.com/edoardottt/golazy v0.1.4
 	github.com/projectdiscovery/goflags v0.1.64
-	github.com/projectdiscovery/gologger v1.1.30
+	github.com/projectdiscovery/gologger v1.1.31
 	github.com/projectdiscovery/mapcidr v1.1.34
 	github.com/projectdiscovery/utils v0.2.17
 	github.com/stretchr/testify v1.9.0
