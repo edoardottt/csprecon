@@ -7,10 +7,10 @@ toolchain go1.23.1
 require (
 	github.com/PuerkitoBio/goquery v1.10.1
 	github.com/edoardottt/golazy v0.1.4
-	github.com/projectdiscovery/goflags v0.1.65
-	github.com/projectdiscovery/gologger v1.1.39
+	github.com/projectdiscovery/goflags v0.1.67
+	github.com/projectdiscovery/gologger v1.1.40
 	github.com/projectdiscovery/mapcidr v1.1.34
-	github.com/projectdiscovery/utils v0.4.5
+	github.com/projectdiscovery/utils v0.4.6
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/ratelimit v0.3.1
 )
