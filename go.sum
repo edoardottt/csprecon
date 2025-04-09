@@ -68,12 +68,12 @@ github.com/projectdiscovery/blackrock v0.0.1 h1:lHQqhaaEFjgf5WkuItbpeCZv2DUIE45k
 github.com/projectdiscovery/blackrock v0.0.1/go.mod h1:ANUtjDfaVrqB453bzToU+YB4cUbvBRpLvEwoWIwlTss=
 github.com/projectdiscovery/goflags v0.1.74 h1:n85uTRj5qMosm0PFBfsvOL24I7TdWRcWq/1GynhXS7c=
 github.com/projectdiscovery/goflags v0.1.74/go.mod h1:UMc9/7dFz2oln+10tv6cy+7WZKTHf9UGhaNkF95emh4=
-github.com/projectdiscovery/gologger v1.1.51 h1:wcC8KHXO/77seIXXlCceZ/GxB0NxIq6qz/RCLOX6i/Y=
-github.com/projectdiscovery/gologger v1.1.51/go.mod h1:Q+BWtdhzoxPyWCyNODPROm2w+DERxIRQBP1vqFBFYKM=
+github.com/projectdiscovery/gologger v1.1.52 h1:ModmZSOcCogO/e46AJu5RfX1037JHwfr+absboldfj8=
+github.com/projectdiscovery/gologger v1.1.52/go.mod h1:lcp8ffA/U/BbztaDk0DC3RXxpriNhtuTL0brnJtrGv0=
 github.com/projectdiscovery/mapcidr v1.1.34 h1:udr83vQ7oz3kEOwlsU6NC6o08leJzSDQtls1wmXN/kM=
 github.com/projectdiscovery/mapcidr v1.1.34/go.mod h1:1+1R6OkKSAKtWDXE9RvxXtXPoajXTYX0eiEdkqlhQqQ=
-github.com/projectdiscovery/utils v0.4.16 h1:VMru9Xf+h/vnmq4uS9adID2N2DojRLfLl8Us333XQfU=
-github.com/projectdiscovery/utils v0.4.16/go.mod h1:y5gnpQn802iEWqf0djTRNskJlS62P5eqe1VS1+ah0tk=
+github.com/projectdiscovery/utils v0.4.17 h1:LATr3L0t+xNt+hLReQjEf66RpuALPk2vV9YV341XkNQ=
+github.com/projectdiscovery/utils v0.4.17/go.mod h1:y5gnpQn802iEWqf0djTRNskJlS62P5eqe1VS1+ah0tk=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d h1:hrujxIzL1woJ7AwssoOcM/tq5JjjG2yYOc8odClEiXA=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
