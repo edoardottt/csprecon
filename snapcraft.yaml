@@ -3,7 +3,7 @@ summary: Discover new target domains using Content Security Policy
 description: |
       Take as input target URLs and probe them to retrieve their CSP (either from Head or Header) 
       and get new target domains.
-version: 0.4.1
+version: 0.4.2
 grade: stable
 base: core20
 
