@@ -35,9 +35,6 @@ linters:
     - unused
     - whitespace
     - wsl_v5
-  settings:
-    wsl_v5:
-      strict-append: false
   exclusions:
     generated: lax
     presets:
