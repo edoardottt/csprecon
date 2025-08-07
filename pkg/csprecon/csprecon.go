@@ -61,12 +61,15 @@ func (r *Runner) Run() {
 	r.InWg.Add(1)
 
 	go pushInput(r)
+
 	r.InWg.Add(1)
 
 	go execute(r)
+
 	r.OutWg.Add(1)
 
 	go pullOutput(r)
+
 	r.InWg.Wait()
 
 	close(r.Output)
@@ -177,6 +180,7 @@ func execute(r *Runner) {
 								tempResult = append(tempResult, res)
 							}
 						}
+
 						r.JSONOutput <- append(tempResult, targetURL)
 					} else {
 						r.JSONOutput <- append(result, targetURL)

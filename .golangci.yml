@@ -1,7 +1,6 @@
+version: "2"
 linters:
-  # Enable all available linters.
-  # Default: false
-  disable-all: true
+  default: none
   enable:
     - asciicheck
     - bodyclose
@@ -20,7 +19,6 @@ linters:
     - goheader
     - gomodguard
     - goprintffuncname
-    - gosimple
     - govet
     - ineffassign
     - misspell
@@ -31,21 +29,33 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - stylecheck
     - testpackage
-    - typecheck
     - unconvert
     - unparam
     - unused
     - whitespace
-    - wsl
-
-linters-settings:
-  wsl:
-    strict-append: false
-    enforce-err-cuddling: true
-
-issues:
-  exclude-rules:
-    - path: pkg/output/banner.go
-      text: "should be written without leading space as `//nolint: gochecknoglobals`"
+    - wsl_v5
+  settings:
+    wsl_v5:
+      strict-append: false
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - path: pkg/output/banner.go
+        text: 'should be written without leading space as `//nolint: gochecknoglobals`'
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
