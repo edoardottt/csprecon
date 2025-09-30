@@ -6,9 +6,9 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/edoardottt/golazy v0.1.4
 	github.com/projectdiscovery/goflags v0.1.74
-	github.com/projectdiscovery/gologger v1.1.55
-	github.com/projectdiscovery/mapcidr v1.1.34
-	github.com/projectdiscovery/utils v0.5.0
+	github.com/projectdiscovery/gologger v1.1.56
+	github.com/projectdiscovery/mapcidr v1.1.95
+	github.com/projectdiscovery/utils v0.6.0
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/ratelimit v0.3.1
 )
