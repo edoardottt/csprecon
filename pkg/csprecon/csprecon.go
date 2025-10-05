@@ -58,17 +58,17 @@ func New(options *input.Options) Runner {
 }
 
 func (r *Runner) Run() {
-	r.InWg.Add(1)
+	r.OutWg.Add(1)
 
-	go pushInput(r)
+	go pullOutput(r)
 
 	r.InWg.Add(1)
 
 	go execute(r)
 
-	r.OutWg.Add(1)
+	r.InWg.Add(1)
 
-	go pullOutput(r)
+	go pushInput(r)
 
 	r.InWg.Wait()
 
@@ -150,7 +150,7 @@ func execute(r *Runner) {
 				if err != nil {
 					gologger.Error().Msgf("%s", err)
 
-					return
+					continue
 				}
 
 				rl.Take()
@@ -159,7 +159,7 @@ func execute(r *Runner) {
 				if err != nil {
 					gologger.Error().Msgf("%s", err)
 
-					return
+					continue
 				}
 
 				result, err := CheckCSP(targetURL, r.UserAgent, dregex, client)
@@ -168,7 +168,7 @@ func execute(r *Runner) {
 						gologger.Error().Msgf("%s", err)
 					}
 
-					return
+					continue
 				}
 
 				if r.Options.JSON {
