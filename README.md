@@ -161,6 +161,7 @@ In the news 📰
 - [Hive Five Newsletter by Securibee](https://securib.ee/newsletter/)
 - [Trickest](https://twitter.com/trick3st/status/1788877498731696256)
 - [Critical Thinking - Bug Bounty Podcast](https://blog.criticalthinkingpodcast.io/p/jason-haddix-returns)
+- [tl;dr sec Newsletter](https://tldrsec.com/p/tldr-sec-225)
 
 License 📝
 -------
