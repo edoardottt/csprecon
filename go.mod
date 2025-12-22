@@ -6,7 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/edoardottt/golazy v0.1.4
 	github.com/projectdiscovery/goflags v0.1.74
-	github.com/projectdiscovery/gologger v1.1.64
+	github.com/projectdiscovery/gologger v1.1.65
 	github.com/projectdiscovery/mapcidr v1.1.97
 	github.com/projectdiscovery/utils v0.7.3
 	github.com/stretchr/testify v1.11.1
@@ -25,6 +25,7 @@ require (
 	github.com/bodgit/windows v1.0.1 // indirect
 	github.com/cnf/structhash v0.0.0-20250313080605-df4c6cc74a9a // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/djherbis/times v1.6.0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
@@ -32,7 +33,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.2 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
-	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
+	github.com/logrusorgru/aurora/v4 v4.0.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mholt/archives v0.1.5 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
@@ -61,6 +62,5 @@ require (
 	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
 	golang.org/x/tools v0.40.0 // indirect
-	gopkg.in/djherbis/times.v1 v1.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
