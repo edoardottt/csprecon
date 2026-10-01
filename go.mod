@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/PuerkitoBio/goquery v1.13.0
 	github.com/edoardottt/golazy v0.1.4
-	github.com/projectdiscovery/goflags v0.2.0
+	github.com/projectdiscovery/goflags v0.2.1
 	github.com/projectdiscovery/gologger v1.1.73
 	github.com/projectdiscovery/mapcidr v1.1.97
 	github.com/projectdiscovery/utils v0.11.2
