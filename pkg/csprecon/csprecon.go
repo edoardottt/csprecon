@@ -34,6 +34,7 @@ type Runner struct {
 	OutWg      *sync.WaitGroup
 	Options    input.Options
 	OutMutex   *sync.Mutex
+	Bypass     map[string]string
 }
 
 func New(options *input.Options) Runner {
@@ -58,6 +59,10 @@ func New(options *input.Options) Runner {
 }
 
 func (r *Runner) Run() {
+	if r.Options.Bypass {
+		r.loadBypassData()
+	}
+
 	r.OutWg.Add(1)
 
 	go pullOutput(r)
@@ -206,9 +211,20 @@ func execute(r *Runner) {
 func pullOutput(r *Runner) {
 	defer r.OutWg.Done()
 
+	// pullOutput runs in a single goroutine, so a plain map is enough to report
+	// each bypass gadget only once.
+	bypassSeen := map[string]struct{}{}
+
 	if r.Options.JSON {
 		for o := range r.JSONOutput {
 			r.OutWg.Add(1)
+
+			if r.Options.Bypass {
+				// The last element is the target URL, the rest are domains.
+				for _, domain := range o[:max(len(o)-1, 0)] {
+					r.reportBypass(domain, bypassSeen)
+				}
+			}
 
 			go writeJSONOutput(r.OutWg, r.OutMutex, &r.Options, o)
 		}
@@ -217,9 +233,52 @@ func pullOutput(r *Runner) {
 			if !r.Result.Printed(o) {
 				r.OutWg.Add(1)
 
+				if r.Options.Bypass {
+					r.reportBypass(o, bypassSeen)
+				}
+
 				go writeOutput(r.OutWg, r.OutMutex, &r.Options, o)
 			}
 		}
+	}
+}
+
+// loadBypassData downloads the CSP bypass dataset once before the scan starts.
+func (r *Runner) loadBypassData() {
+	client, err := customClient(&r.Options)
+	if err != nil {
+		gologger.Error().Msgf("could not build client for CSP bypass data: %s", err)
+
+		return
+	}
+
+	gadgets, err := FetchBypassData(client, r.UserAgent)
+	if err != nil {
+		gologger.Error().Msgf("could not load CSP bypass data: %s", err)
+
+		return
+	}
+
+	r.Bypass = gadgets
+
+	gologger.Info().Msgf("Loaded %d CSP bypass gadgets", len(gadgets))
+}
+
+// reportBypass prints the known bypass gadget for a domain, at most once.
+func (r *Runner) reportBypass(domain string, seen map[string]struct{}) {
+	domain = strings.TrimSpace(domain)
+	if domain == "" {
+		return
+	}
+
+	if _, ok := seen[domain]; ok {
+		return
+	}
+
+	seen[domain] = struct{}{}
+
+	if code, ok := LookupBypass(domain, r.Bypass); ok {
+		gologger.Info().Msgf("[bypass] %s %s", domain, code)
 	}
 }
 

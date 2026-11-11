@@ -38,6 +38,7 @@ type Options struct {
 	Cidr        bool
 	RateLimit   int
 	Proxy       string
+	Bypass      bool
 }
 
 // configureOutput configures the output on the screen.
@@ -69,6 +70,7 @@ func ParseOptions() *Options {
 		flagSet.IntVarP(&options.Timeout, "timeout", "t", DefaultTimeout, `Connection timeout in seconds`),
 		flagSet.IntVarP(&options.RateLimit, "rate-limit", "rl", DefaultRateLimit, `Set a rate limit (per second)`),
 		flagSet.StringVarP(&options.Proxy, "proxy", "px", "", `Set a proxy server (URL)`),
+		flagSet.BoolVarP(&options.Bypass, "bypass", "b", false, `Report known CSP bypass gadgets for discovered domains (data from cspbypass.com)`),
 	)
 
 	// Output

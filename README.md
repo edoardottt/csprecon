@@ -67,6 +67,7 @@ CONFIGURATIONS:
    -t, -timeout int      Connection timeout in seconds (default 10)
    -rl, -rate-limit int  Set a rate limit (per second)
    -px, -proxy string    Set a proxy server (URL)
+   -b, -bypass           Report known CSP bypass gadgets for discovered domains (data from cspbypass.com)
 
 OUTPUT:
    -o, -output string  File to write output results
