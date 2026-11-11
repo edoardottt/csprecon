@@ -59,9 +59,14 @@ func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]strin
 		"X-WebKit-CSP",
 	}
 
+	// A response may carry the same CSP header more than once. Header.Get only
+	// returns the first value, so iterate over every value to avoid missing
+	// domains declared in the later headers.
 	for _, h := range cspHeaders {
-		if val := resp.Header.Get(h); val != "" {
-			result = append(result, ParseCSP(val, rCSP)...)
+		for _, val := range resp.Header.Values(h) {
+			if val != "" {
+				result = append(result, ParseCSP(val, rCSP)...)
+			}
 		}
 	}
 
