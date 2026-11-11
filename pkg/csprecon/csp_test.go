@@ -7,6 +7,8 @@ This repository is under MIT License https://github.com/edoardottt/csprecon/blob
 package csprecon_test
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -74,6 +76,21 @@ func TestParseCSP(t *testing.T) {
 			require.ElementsMatch(t, tt.want, got)
 		})
 	}
+}
+
+func TestCheckCSPMultipleHeaders(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		// Same header name sent twice. Each one declares a different domain.
+		w.Header().Add("Content-Security-Policy", "default-src 'self' https://first.example.com")
+		w.Header().Add("Content-Security-Policy", "img-src https://second.example.com")
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	got, err := csprecon.CheckCSP(srv.URL, "test-agent", csprecon.CompileRegex(csprecon.DomainRegex), srv.Client())
+	require.NoError(t, err)
+	require.Contains(t, got, "first.example.com")
+	require.Contains(t, got, "second.example.com")
 }
 
 func TestParseBodyCSP(t *testing.T) {
