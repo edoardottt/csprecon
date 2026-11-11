@@ -138,7 +138,7 @@ Contributing 🛠
 
 Just open an [issue](https://github.com/edoardottt/csprecon/issues) / [pull request](https://github.com/edoardottt/csprecon/pulls).
 
-Before opening a pull request, download [golangci-lint](https://golangci-lint.run/usage/install/) and run
+Before opening a pull request, download [golangci-lint](https://golangci-lint.run/welcome/install/) and run
 
 ```bash
 golangci-lint run
