@@ -13,7 +13,9 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/edoardottt/csprecon/pkg/input"
@@ -32,60 +34,142 @@ const (
 	IdleConnTimeout     = 90
 )
 
-// CheckCSP returns the list of domains parsed from a URL found in CSP.
-func CheckCSP(url, ua string, rCSP *regexp.Regexp, client *http.Client) ([]string, error) {
-	result := []string{}
+// cspData holds everything parsed from a response's CSP: the domains (as used by
+// the normal discovery output) plus, when the bypass feature is enabled, the
+// enforced policies.
+type cspData struct {
+	Domains  []string
+	Enforced []cspPolicy
+	// FinalURL is the URL of the page the CSP was read from, set only when the
+	// request was redirected there.
+	FinalURL string
+}
 
-	gologger.Debug().Msgf("Checking CSP for %s", url)
+// cspHeader pairs a CSP header name with whether it is report-only (not enforced).
+type cspHeader struct {
+	name       string
+	reportOnly bool
+}
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+//nolint:gochecknoglobals // read-only header table.
+var cspHeaders = []cspHeader{
+	{"Content-Security-Policy", false},
+	{"Content-Security-Policy-Report-Only", true},
+	{"X-Content-Security-Policy", false},
+	{"X-WebKit-CSP", false},
+}
+
+// checkCSPFull fetches the URL once and extracts both the discovered domains and,
+// when bypass is true, the structured CSP policies needed for bypass detection.
+func checkCSPFull(rawurl, ua string, rCSP *regexp.Regexp, client *http.Client, bypass bool) (cspData, error) {
+	data := cspData{Domains: []string{}}
+
+	gologger.Debug().Msgf("Checking CSP for %s", rawurl)
+
+	req, err := http.NewRequest(http.MethodGet, rawurl, nil)
 	if err != nil {
-		return result, err
+		return data, err
 	}
 
 	req.Header.Add("User-Agent", ua)
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return result, err
+		return data, err
 	}
 
 	defer resp.Body.Close()
 
-	cspHeaders := []string{
-		"Content-Security-Policy",
-		"Content-Security-Policy-Report-Only",
-		"X-Content-Security-Policy",
-		"X-WebKit-CSP",
+	// The client follows redirects, so the CSP belongs to the last page.
+	if final := resp.Request.URL.String(); final != req.URL.String() {
+		data.FinalURL = final
 	}
 
 	// A response may carry the same CSP header more than once. Header.Get only
 	// returns the first value, so iterate over every value to avoid missing
-	// domains declared in the later headers.
+	// domains (or policies) declared in the later headers.
 	for _, h := range cspHeaders {
-		for _, val := range resp.Header.Values(h) {
-			if val != "" {
-				result = append(result, ParseCSP(val, rCSP)...)
+		for _, val := range resp.Header.Values(h.name) {
+			if val == "" {
+				continue
+			}
+
+			data.Domains = append(data.Domains, ParseCSP(val, rCSP)...)
+
+			// A Report-Only policy blocks nothing, so there is nothing to bypass.
+			if bypass && !h.reportOnly {
+				data.Enforced = append(data.Enforced, parsePolicies(val)...)
 			}
 		}
 	}
 
-	bodyCSP := ParseBodyCSP(resp.Body, rCSP)
-	result = append(result, bodyCSP...)
+	bodyDomains, metaPolicies := parseBodyCSPRaw(resp.Body, rCSP)
+	data.Domains = append(data.Domains, bodyDomains...)
+	// Sites often send the same policy in several headers and a meta tag.
+	data.Domains = golazy.RemoveDuplicateValues(data.Domains)
 
-	return result, nil
+	if bypass {
+		// A CSP delivered via a <meta> tag is always enforced (report-only is
+		// not valid in meta and is ignored by browsers). Chrome splits it on
+		// commas, like a header.
+		for _, mp := range metaPolicies {
+			data.Enforced = append(data.Enforced, parsePolicies(mp)...)
+		}
+	}
+
+	return data, nil
 }
 
-// ParseCSP returns the list of domains parsed from a raw CSP (string).
+// ParseCSP returns the domains named in a raw CSP: the host of each source and
+// report URL, lowercased. Paths are skipped, so a file name such as app.min.js
+// is not mistaken for a domain. A host is kept only when r matches all of it.
 func ParseCSP(input string, r *regexp.Regexp) []string {
-	result := r.FindAllString(input, -1)
+	result := []string{}
+
+	tokens := strings.FieldsFunc(input, func(c rune) bool {
+		return c == ';' || c == ',' || unicode.IsSpace(c)
+	})
+
+	for _, token := range tokens {
+		if host := tokenHost(token); host != "" && r.FindString(host) == host {
+			result = append(result, host)
+		}
+	}
+
 	return golazy.RemoveDuplicateValues(result)
 }
 
-// ParseBodyCSP returns the list of domains parsed from the CSP found in the meta tag
-// of the input HTML body.
-func ParseBodyCSP(body io.Reader, rCSP *regexp.Regexp) []string {
-	result := []string{}
+// tokenHost returns the host of one CSP token, or "" when it has none: a
+// keyword, nonce or hash ('self'), a scheme ("https:", "com.example.app:") or
+// a path ("/csp/report.php").
+func tokenHost(token string) string {
+	if strings.HasPrefix(token, "'") {
+		return ""
+	}
+
+	// "https://host" and "//host" (a report URL relative to the page's scheme).
+	if scheme, rest, ok := strings.Cut(token, "//"); ok && (scheme == "" || strings.HasSuffix(scheme, ":")) {
+		token = rest
+	}
+
+	if i := strings.IndexAny(token, "/?#"); i != -1 {
+		token = token[:i]
+	}
+
+	// A port is a number or "*". Anything else after the colon means the token
+	// is a scheme, e.g. "x-apple.systempreferences:" or "data:".
+	host, port, hasPort := strings.Cut(token, ":")
+	if hasPort && port != "*" && (port == "" || strings.Trim(port, "0123456789") != "") {
+		return ""
+	}
+
+	return strings.TrimSuffix(strings.ToLower(host), ".")
+}
+
+// parseBodyCSPRaw returns the domains found in the CSP meta tags of the input
+// HTML body, and the raw CSP strings of the ones a browser enforces.
+func parseBodyCSPRaw(body io.Reader, rCSP *regexp.Regexp) (domains, rawPolicies []string) {
+	domains = []string{}
 
 	limitedReader := io.LimitReader(body, MaxKBBodyReader)
 
@@ -95,18 +179,26 @@ func ParseBodyCSP(body io.Reader, rCSP *regexp.Regexp) []string {
 		// https://github.com/edoardottt/csprecon/issues/482
 		// with a simple print instead of fatal/panic
 		// we get a SIGSEGV in doc.Find
-		return []string{}
+		return []string{}, nil
 	}
 
 	// Add the 'i' modifier to make http-equiv case-insensitive
-	doc.Find("meta[http-equiv='Content-Security-Policy' i]").Each(func(i int, s *goquery.Selection) {
+	doc.Find("meta[http-equiv='Content-Security-Policy' i]").Each(func(_ int, s *goquery.Selection) {
 		contentCSP := s.AttrOr("content", "")
-		if contentCSP != "" {
-			result = append(result, ParseCSP(contentCSP, rCSP)...)
+		if contentCSP == "" {
+			return
+		}
+
+		domains = append(domains, ParseCSP(contentCSP, rCSP)...)
+
+		// Chrome enforces a meta CSP only as a child of <head>: one in <body>
+		// or inside a <template> is ignored. Its domains are still reported.
+		if s.Parent().Is("head") {
+			rawPolicies = append(rawPolicies, contentCSP)
 		}
 	})
 
-	return result
+	return domains, rawPolicies
 }
 
 func customClient(options *input.Options) (*http.Client, error) {
