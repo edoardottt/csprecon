@@ -16,11 +16,10 @@ import (
 	"github.com/projectdiscovery/mapcidr"
 )
 
-// CompileRegex.
+// CompileRegex compiles regex, and panics if it is not a valid regular
+// expression.
 func CompileRegex(regex string) *regexp.Regexp {
-	r, _ := regexp.Compile(regex)
-
-	return r
+	return regexp.MustCompile(regex)
 }
 
 // DomainOk checks domains filtering based on input.
@@ -29,7 +28,12 @@ func DomainOk(input string, domains []string) bool {
 		return false
 	}
 
+	// Domain names are case-insensitive.
+	input = strings.ToLower(input)
+
 	for _, domain := range domains {
+		domain = strings.ToLower(domain)
+
 		if input == domain {
 			return true
 		}
@@ -42,9 +46,13 @@ func DomainOk(input string, domains []string) bool {
 	return false
 }
 
-// PrepareURL takes as input a string and prepares
-// the input URL in order to get the favicon icon.
+// PrepareURL returns the URL to request for an input value: the value without
+// surrounding whitespace, with "http://" added when it has no scheme. The rest
+// is kept as given (query, encoded characters such as %2F), except for the
+// fragment, which is never sent to the server.
 func PrepareURL(inputURL string) (string, error) {
+	inputURL = strings.TrimSpace(inputURL)
+
 	if len(inputURL) < MinURLLength {
 		return "", input.ErrMalformedURL
 	}
@@ -58,20 +66,24 @@ func PrepareURL(inputURL string) (string, error) {
 		return "", err
 	}
 
-	return u.Scheme + "://" + u.Host + u.Path, nil
+	u.Fragment = ""
+	// Go sends the query as it is, and a space would split the request line:
+	// servers answer 400. Browsers send it as %20.
+	u.RawQuery = strings.ReplaceAll(u.RawQuery, " ", "%20")
+
+	return u.String(), nil
 }
 
-func handleCIDRInput(inputCidr string) ([]string, error) {
+// handleCIDRInput returns the addresses of a CIDR range as a stream. They are
+// generated one at a time as the stream is read, never all held in memory, so
+// even a huge range can be scanned. The stream must be read to the end, or its
+// generating goroutine is never released.
+func handleCIDRInput(inputCidr string) (<-chan string, error) {
 	if !isCIDR(inputCidr) {
 		return nil, input.ErrCidrBadFormat
 	}
 
-	ips, err := mapcidr.IPAddresses(inputCidr)
-	if err != nil {
-		return nil, err
-	}
-
-	return ips, nil
+	return mapcidr.IPAddressesAsStream(inputCidr)
 }
 
 // isCIDR determines if the given ip is a cidr range.
