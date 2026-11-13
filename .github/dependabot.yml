@@ -28,3 +28,7 @@ updates:
       include: "scope"
     labels:
       - "Maintenance"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
