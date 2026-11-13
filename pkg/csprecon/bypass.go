@@ -43,9 +43,11 @@ const (
 	maxBypassDataSize = 8 * 1024 * 1024
 	// bypassUserAgent is a generic, identity-free User-Agent for the fetch.
 	bypassUserAgent = "csprecon/" + output.Version
+	// bypassLabel is the label of bypass findings, highlighted on a terminal.
+	bypassLabel = "BYPASS"
 	// BypassPrefix marks bypass findings in plain/silent output so they can be
 	// filtered apart from discovered domains.
-	BypassPrefix = "[bypass]"
+	BypassPrefix = "[" + bypassLabel + "]"
 	// cacheDirPerm is the permission for the cache directory.
 	cacheDirPerm = 0o755
 	// scannerInitBufSize and scannerMaxBufSize size the line scanner; gadget
