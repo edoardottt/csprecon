@@ -57,8 +57,8 @@ Usage:
 
 Flags:
 INPUT:
-   -u, -url string   Input domain
-   -l, -list string  File containing input domains
+   -u, -url string   Input URL
+   -l, -list string  File containing input URLs
    -cidr             Interpret input as CIDR
 
 CONFIGURATIONS:
@@ -82,7 +82,7 @@ OUTPUT:
 Examples 💡
 ----------
 
-Grab all possible results from single domain
+Grab all possible results from single URL
 
 ```bash
 csprecon -u https://www.github.com
@@ -92,7 +92,7 @@ csprecon -u https://www.github.com
 echo https://www.github.com | csprecon
 ```
 
-Grab all possible results from a list of domains (protocols needed!)
+Grab all possible results from a list of URLs
 
 ```bash
 csprecon -l targets.txt
@@ -102,7 +102,7 @@ csprecon -l targets.txt
 cat targets.txt | csprecon
 ```
 
-Grab all possible results belonging to specific target(s) from a list of domains (protocols needed!)
+Grab all possible results belonging to specific target(s) from a list of URLs
 
 ```bash
 cat targets.txt | csprecon -d google.com
