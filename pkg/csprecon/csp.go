@@ -223,9 +223,7 @@ func customClient(options *input.Options) (*http.Client, error) {
 
 		transport.Proxy = http.ProxyURL(u)
 
-		if options.Verbose {
-			gologger.Debug().Msgf("Using Proxy %s", options.Proxy)
-		}
+		gologger.Debug().Msgf("Using Proxy %s", options.Proxy)
 	}
 
 	client := http.Client{

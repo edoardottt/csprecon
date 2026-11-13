@@ -5,12 +5,14 @@ go 1.26.0
 require (
 	github.com/PuerkitoBio/goquery v1.13.0
 	github.com/edoardottt/golazy v0.1.4
+	github.com/logrusorgru/aurora/v4 v4.0.0
 	github.com/projectdiscovery/goflags v0.2.1
 	github.com/projectdiscovery/gologger v1.1.75
 	github.com/projectdiscovery/mapcidr v1.1.97
 	github.com/projectdiscovery/utils v0.11.13
 	github.com/stretchr/testify v1.12.1
 	go.uber.org/ratelimit v0.3.1
+	golang.org/x/term v0.48.0
 )
 
 require (
@@ -25,7 +27,6 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/logrusorgru/aurora/v4 v4.0.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20261101121723-be84dd9509a0 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
@@ -46,6 +47,5 @@ require (
 	golang.org/x/exp v0.0.0-20261112173441-d10d3b464990 // indirect
 	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/sys v0.50.0 // indirect
-	golang.org/x/term v0.48.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

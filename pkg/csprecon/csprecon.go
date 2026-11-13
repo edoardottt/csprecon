@@ -20,8 +20,10 @@ import (
 	"github.com/edoardottt/csprecon/pkg/input"
 	"github.com/edoardottt/csprecon/pkg/output"
 	"github.com/edoardottt/golazy"
+	"github.com/logrusorgru/aurora/v4"
 	"github.com/projectdiscovery/gologger"
 	fileutil "github.com/projectdiscovery/utils/file"
+	"golang.org/x/term"
 )
 
 const (
@@ -42,6 +44,7 @@ type Runner struct {
 	gadgets   *gadgetDB
 	client    *http.Client
 	outFile   *os.File     // the -o file, nil without -o
+	color     bool         // highlight bypass lines on stdout
 	scanned   *atomic.Bool // some target was scanned
 	failed    *atomic.Bool // some target could not be scanned
 }
@@ -66,6 +69,9 @@ func New(options *input.Options) Runner {
 		client:    client,
 		scanned:   &atomic.Bool{},
 		failed:    &atomic.Bool{},
+		// Colors only on a terminal: piped or redirected output, which is
+		// what gets grepped or fed to other tools, stays plain.
+		color: !options.JSON && term.IsTerminal(int(os.Stdout.Fd())),
 	}
 
 	if bypassEnabled(options) {
@@ -82,9 +88,7 @@ func New(options *input.Options) Runner {
 			gologger.Warning().Msg("bypass: live fetch failed, using cached CSPBypass data")
 		}
 
-		if options.Verbose {
-			gologger.Info().Msgf("bypass: loaded %d gadgets (%s)", db.count(), src)
-		}
+		gologger.Debug().Msgf("bypass: loaded %d gadgets (%s)", db.count(), src)
 	}
 
 	// Opening -o empties it, so it is opened only after every setup step that
@@ -225,9 +229,9 @@ func execute(r *Runner) {
 				if err != nil {
 					r.failed.Store(true)
 
-					if r.Options.Verbose {
-						gologger.Error().Msgf("%s", err)
-					}
+					// An unreachable target does not stop the run. gologger
+					// ranks Warning below Info, so this shows only with -v.
+					gologger.Warning().Msgf("%s", err)
 
 					continue
 				}
@@ -317,8 +321,23 @@ func pullOutput(r *Runner) {
 			}
 		}
 
+		if r.color {
+			line = highlightBypass(line)
+		}
+
 		fmt.Println(line)
 	}
+}
+
+// highlightBypass colors the label of every bypass line in a block of plain
+// lines. Bold bright green is used by no gologger label, so a finding never
+// looks like a log message. Lines never contain a newline, so a bypass line is
+// a prefix found at the start of the block or after a "\n".
+func highlightBypass(block string) string {
+	plain := "\n" + BypassPrefix + " "
+	colored := "\n[" + aurora.Bold(aurora.BrightGreen(bypassLabel)).String() + "] "
+
+	return strings.ReplaceAll("\n"+block, plain, colored)[1:]
 }
 
 // filterDomains keeps only the domains belonging to one of the allowed domains.
