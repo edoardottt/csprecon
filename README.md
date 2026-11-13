@@ -57,8 +57,8 @@ Usage:
 
 Flags:
 INPUT:
-   -u, -url string   Input domain
-   -l, -list string  File containing input domains
+   -u, -url string   Input URL
+   -l, -list string  File containing input URLs
    -cidr             Interpret input as CIDR
 
 CONFIGURATIONS:
@@ -67,6 +67,10 @@ CONFIGURATIONS:
    -t, -timeout int      Connection timeout in seconds (default 10)
    -rl, -rate-limit int  Set a rate limit (per second)
    -px, -proxy string    Set a proxy server (URL)
+
+BYPASS:
+   -b, -bypass               Report known CSP bypass gadgets (CSPBypass dataset)
+   -bf, -bypass-file string  Use a local data.tsv (CSPBypass format) instead of fetching
 
 OUTPUT:
    -o, -output string  File to write output results
@@ -78,7 +82,7 @@ OUTPUT:
 Examples 💡
 ----------
 
-Grab all possible results from single domain
+Grab all possible results from single URL
 
 ```bash
 csprecon -u https://www.github.com
@@ -88,7 +92,7 @@ csprecon -u https://www.github.com
 echo https://www.github.com | csprecon
 ```
 
-Grab all possible results from a list of domains (protocols needed!)
+Grab all possible results from a list of URLs
 
 ```bash
 csprecon -l targets.txt
@@ -98,7 +102,7 @@ csprecon -l targets.txt
 cat targets.txt | csprecon
 ```
 
-Grab all possible results belonging to specific target(s) from a list of domains (protocols needed!)
+Grab all possible results belonging to specific target(s) from a list of URLs
 
 ```bash
 cat targets.txt | csprecon -d google.com
@@ -122,11 +126,29 @@ JSON Output
 cat targets.txt | csprecon -j
 ```
 
-Use a Proxy
+Use a Proxy (`http`, `https`, `socks5` or `socks5h`)
 
 ```bash
 cat targets.txt | csprecon -px http://127.0.0.1:8080
 ```
+
+Report known CSP bypass gadgets found in the target's CSP
+
+```bash
+csprecon -u https://www.github.com -b
+```
+
+Bring your own gadget list instead of fetching (CSPBypass `data.tsv` format)
+
+```bash
+csprecon -u https://www.github.com -bf ./data.tsv
+```
+
+> [!NOTE]
+> The gadget dataset comes from the [CSPBypass](https://github.com/renniepak/CSPBypass) project (GPL-3.0).  
+> csprecon does not bundle it: with `-b` it is fetched at runtime from the upstream repository
+> and cached locally per user (`~/.cache/csprecon/` or the OS equivalent), falling back to the cached copy if the fetch fails.  
+> Credit to [@renniepak](https://github.com/renniepak) and the CSPBypass contributors.
 
 Changelog 📌
 -------
@@ -138,7 +160,7 @@ Contributing 🛠
 
 Just open an [issue](https://github.com/edoardottt/csprecon/issues) / [pull request](https://github.com/edoardottt/csprecon/pulls).
 
-Before opening a pull request, download [golangci-lint](https://golangci-lint.run/usage/install/) and run
+Before opening a pull request, download [golangci-lint](https://golangci-lint.run/welcome/install/) and run
 
 ```bash
 golangci-lint run

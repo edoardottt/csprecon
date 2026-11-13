@@ -10,31 +10,31 @@ import (
 	"sync"
 )
 
+// Result records the results already printed.
 type Result struct {
-	Map   map[string]struct{}
-	Mutex *sync.RWMutex
+	seen map[string]struct{}
+	mu   *sync.Mutex
 }
 
 func New() Result {
 	return Result{
-		Map:   map[string]struct{}{},
-		Mutex: &sync.RWMutex{},
+		seen: map[string]struct{}{},
+		mu:   &sync.Mutex{},
 	}
 }
 
+// Printed reports whether result has been seen before, recording it as seen on
+// the first call. It is safe for concurrent use: exactly one caller observes a
+// given value as new.
 func (o *Result) Printed(result string) bool {
-	o.Mutex.RLock()
+	o.mu.Lock()
+	defer o.mu.Unlock()
 
-	if _, ok := o.Map[result]; !ok {
-		o.Mutex.RUnlock()
-		o.Mutex.Lock()
-		o.Map[result] = struct{}{}
-		o.Mutex.Unlock()
-
-		return false
-	} else {
-		o.Mutex.RUnlock()
+	if _, ok := o.seen[result]; ok {
+		return true
 	}
 
-	return true
+	o.seen[result] = struct{}{}
+
+	return false
 }

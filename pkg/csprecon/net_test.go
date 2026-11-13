@@ -124,6 +124,24 @@ func TestDomainOk(t *testing.T) {
 			want:    false,
 		},
 		{
+			name:    "filter in uppercase",
+			input:   "cdn.example.com",
+			domains: []string{"EXAMPLE.com"},
+			want:    true,
+		},
+		{
+			name:    "input in uppercase",
+			input:   "CDN.Example.com",
+			domains: []string{"example.com"},
+			want:    true,
+		},
+		{
+			name:    "uppercase not ok",
+			input:   "CDN.agoogle.com",
+			domains: []string{"Google.com"},
+			want:    false,
+		},
+		{
 			name:    "subdomain not ok 3",
 			input:   "agoogle.com",
 			domains: []string{"ciao.com", "aaagoogle.com"},

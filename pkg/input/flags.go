@@ -7,7 +7,6 @@ This repository is under MIT License https://github.com/edoardottt/csprecon/blob
 package input
 
 import (
-	"io"
 	"os"
 	"strings"
 
@@ -30,7 +29,6 @@ type Options struct {
 	FileOutput  string
 	Domain      goflags.StringSlice
 	Verbose     bool
-	Output      io.Writer
 	Silent      bool
 	JSON        bool
 	Concurrency int
@@ -38,6 +36,8 @@ type Options struct {
 	Cidr        bool
 	RateLimit   int
 	Proxy       string
+	Bypass      bool
+	BypassFile  string
 }
 
 // configureOutput configures the output on the screen.
@@ -69,6 +69,11 @@ func ParseOptions() *Options {
 		flagSet.IntVarP(&options.Timeout, "timeout", "t", DefaultTimeout, `Connection timeout in seconds`),
 		flagSet.IntVarP(&options.RateLimit, "rate-limit", "rl", DefaultRateLimit, `Set a rate limit (per second)`),
 		flagSet.StringVarP(&options.Proxy, "proxy", "px", "", `Set a proxy server (URL)`),
+	)
+
+	flagSet.CreateGroup("bypass", "Bypass",
+		flagSet.BoolVarP(&options.Bypass, "bypass", "b", false, `Report known CSP bypass gadgets (CSPBypass dataset)`),
+		flagSet.StringVarP(&options.BypassFile, "bypass-file", "bf", "", `Use a local data.tsv (CSPBypass format) instead of fetching`),
 	)
 
 	// Output

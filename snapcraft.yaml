@@ -1,9 +1,9 @@
 name: csprecon
 summary: Discover new target domains using Content Security Policy
 description: |
-      Take as input target URLs and probe them to retrieve their CSP (either from Head or Header) 
-      and get new target domains.
-version: 0.4.7
+      Take as input target URLs and probe them to retrieve their CSP (either from Head or Header), 
+      get new target domains and check for known CSP bypass gadgets.
+version: 0.5.0
 grade: stable
 base: core20
 
