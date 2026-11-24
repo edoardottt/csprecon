@@ -3,13 +3,13 @@ module github.com/edoardottt/csprecon
 go 1.26.0
 
 require (
-	github.com/PuerkitoBio/goquery v1.13.0
+	github.com/PuerkitoBio/goquery v1.14.0
 	github.com/edoardottt/golazy v0.1.4
 	github.com/logrusorgru/aurora/v4 v4.0.0
 	github.com/projectdiscovery/goflags v0.2.1
 	github.com/projectdiscovery/gologger v1.1.75
 	github.com/projectdiscovery/mapcidr v1.1.97
-	github.com/projectdiscovery/utils v0.11.13
+	github.com/projectdiscovery/utils v0.11.14
 	github.com/stretchr/testify v1.12.1
 	go.uber.org/ratelimit v0.3.1
 	golang.org/x/term v0.48.0
