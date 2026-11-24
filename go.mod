@@ -3,7 +3,7 @@ module github.com/edoardottt/csprecon
 go 1.26.0
 
 require (
-	github.com/PuerkitoBio/goquery v1.13.0
+	github.com/PuerkitoBio/goquery v1.14.0
 	github.com/edoardottt/golazy v0.1.4
 	github.com/logrusorgru/aurora/v4 v4.0.0
 	github.com/projectdiscovery/goflags v0.2.1
