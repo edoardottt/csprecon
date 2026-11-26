@@ -146,19 +146,26 @@ func TestBypasses(t *testing.T) {
 		require.Empty(t, views)
 	})
 
-	t.Run("non-script directive yields no bypass", func(t *testing.T) {
+	t.Run("non-script directive yields the open-policy findings only", func(t *testing.T) {
 		t.Parallel()
 
+		// Scripts are unrestricted, so inline and any-host scripts run; the
+		// per-gadget loop is skipped (see TestBypassesOpenScriptSrc).
 		views := csprecon.BypassFindings(db, page, []string{"img-src https://accounts.google.com"})
-		require.Empty(t, views)
+		require.Len(t, views, 3)
+		require.Equal(t, "'unsafe-inline'", views[0].Domain)
+		require.Equal(t, "*", views[1].Domain)
+		require.Equal(t, "data:", views[2].Domain)
 	})
 
-	t.Run("unsafe-inline surfaced as flag", func(t *testing.T) {
+	t.Run("unsafe-inline surfaced as flag and as an inline finding", func(t *testing.T) {
 		t.Parallel()
 
 		views := csprecon.BypassFindings(db, page, []string{"script-src https://accounts.google.com 'unsafe-inline'"})
-		require.Len(t, views, 1)
-		require.Contains(t, views[0].Flags, "unsafe-inline")
+		require.Len(t, views, 2)
+		require.Equal(t, "'unsafe-inline'", views[0].Domain)
+		require.Equal(t, "accounts.google.com", views[1].Domain)
+		require.Contains(t, views[1].Flags, "unsafe-inline")
 	})
 
 	t.Run("gadget not fetched over http(s) is never reported", func(t *testing.T) {
@@ -169,9 +176,12 @@ func TestBypasses(t *testing.T) {
 				"custom.example\t<script src=\"custom://custom.example/x\"></script>\n" +
 				"h.example\t<script src=\"http://h.example/x\"></script>\n"))
 
+		// '*' on an http page allows any-host scripts, so the open-host
+		// finding replaces the per-gadget noise (the h.example gadget is
+		// allowed by the same star, which is exactly what it reports).
 		views := csprecon.BypassFindings(other, "http://victim.example", []string{"script-src * wss: custom:"})
 		require.Len(t, views, 1)
-		require.Equal(t, "h.example", views[0].Domain)
+		require.Equal(t, "*", views[0].Domain)
 	})
 }
 
@@ -239,6 +249,11 @@ func TestBypassDirectiveAndFlags(t *testing.T) {
 			"script-src-elem", []string{"unsafe-eval", "unsafe-inline"},
 		},
 		{
+			"nonce keeps the flag off but the gadget on",
+			"script-src 'nonce-abc123' 'unsafe-inline' https://g.example",
+			"script-src", nil,
+		},
+		{
 			"eval in script-src-elem ignored",
 			"script-src-elem https://g.example 'unsafe-eval'; script-src 'self'",
 			"script-src-elem", nil,
@@ -259,9 +274,19 @@ func TestBypassDirectiveAndFlags(t *testing.T) {
 				return
 			}
 
-			require.Len(t, views, 1)
-			require.Equal(t, tt.directive, views[0].Directive)
-			require.Equal(t, tt.flags, views[0].Flags)
+			// Policies with an effective 'unsafe-inline' also emit the
+			// synthetic inline finding; assert on the gadget finding.
+			var view *csprecon.BypassView
+			for i := range views {
+				if views[i].Domain == "g.example" {
+					view = &views[i]
+
+					break
+				}
+			}
+			require.NotNil(t, view, "gadget finding missing: %+v", views)
+			require.Equal(t, tt.directive, view.Directive)
+			require.Equal(t, tt.flags, view.Flags)
 		})
 	}
 }
@@ -440,4 +465,91 @@ func TestCheckCSPFullMetaInHead(t *testing.T) {
 	for _, d := range []string{"head.example", "after.example", "template.example", "body.example"} {
 		require.Contains(t, domains, d)
 	}
+}
+
+func TestBypassesOpenScriptSrc(t *testing.T) {
+	t.Parallel()
+
+	const page = "https://victim.example"
+
+	data := "Domain\tCode\n" +
+		"a.example\t<script src=\"https://a.example/jsonp?cb=alert\"></script>\n" +
+		"b.example\t<script src=\"https://b.example/jsonp?cb=alert\"></script>\n"
+
+	db := csprecon.ParseGadgets(strings.NewReader(data))
+
+	t.Run("open host list reports inline and open host, not every gadget", func(t *testing.T) {
+		t.Parallel()
+
+		views := csprecon.BypassFindings(db, page, []string{"script-src 'self' 'unsafe-inline' 'unsafe-eval' *"})
+		require.Len(t, views, 2)
+		require.Equal(t, "'unsafe-inline'", views[0].Domain)
+		require.Equal(t, "<script>alert(1)</script>", views[0].Code)
+		require.Equal(t, "*", views[1].Domain)
+		require.Equal(t, `<script src="https://attacker.example/xss.js"></script>`, views[1].Code)
+	})
+
+	t.Run("scheme-only https reports open host only", func(t *testing.T) {
+		t.Parallel()
+
+		views := csprecon.BypassFindings(db, page, []string{"script-src https:"})
+		require.Len(t, views, 1)
+		require.Equal(t, "*", views[0].Domain)
+	})
+
+	t.Run("nonce disables the unsafe-inline flag, gadgets still reported", func(t *testing.T) {
+		t.Parallel()
+
+		views := csprecon.BypassFindings(db, page, []string{"script-src 'nonce-abc123' 'unsafe-inline' https://a.example"})
+		require.Len(t, views, 1)
+		require.Equal(t, "a.example", views[0].Domain)
+		require.Empty(t, views[0].Flags)
+	})
+
+	t.Run("hash disables the unsafe-inline flag", func(t *testing.T) {
+		t.Parallel()
+
+		views := csprecon.BypassFindings(db, page, []string{"script-src 'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=' 'unsafe-inline' https://a.example"})
+		require.Len(t, views, 1)
+		require.Equal(t, "a.example", views[0].Domain)
+		require.Empty(t, views[0].Flags)
+	})
+
+	t.Run("data source is reported", func(t *testing.T) {
+		t.Parallel()
+
+		views := csprecon.BypassFindings(db, page, []string{"script-src 'self' data:"})
+		require.Len(t, views, 1)
+		require.Equal(t, "data:", views[0].Domain)
+		require.Equal(t, `<script src="data:text/javascript,alert(1)"></script>`, views[0].Code)
+	})
+
+	t.Run("absent directive reports inline and open host", func(t *testing.T) {
+		t.Parallel()
+
+		views := csprecon.BypassFindings(db, page, []string{"img-src https://a.example"})
+		require.Len(t, views, 3)
+		require.Equal(t, "'unsafe-inline'", views[0].Domain)
+		require.Equal(t, "no-script-src", views[0].Directive)
+		require.Equal(t, "*", views[1].Domain)
+		require.Equal(t, "data:", views[2].Domain)
+	})
+
+	t.Run("strict-dynamic still yields no host bypass", func(t *testing.T) {
+		t.Parallel()
+
+		views := csprecon.BypassFindings(db, page, []string{"script-src 'strict-dynamic' 'unsafe-inline'"})
+		// 'strict-dynamic' disables 'unsafe-inline' and host sources, but
+		// parser-inserted scripts from listed hosts do not load; inline is
+		// blocked, so no findings at all.
+		require.Empty(t, views)
+	})
+
+	t.Run("nonce without unsafe-inline yields no inline finding", func(t *testing.T) {
+		t.Parallel()
+
+		views := csprecon.BypassFindings(db, page, []string{"script-src 'nonce-abc123' https://a.example"})
+		require.Len(t, views, 1)
+		require.Equal(t, "a.example", views[0].Domain)
+	})
 }
