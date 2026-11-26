@@ -277,6 +277,7 @@ func TestBypassDirectiveAndFlags(t *testing.T) {
 			// Policies with an effective 'unsafe-inline' also emit the
 			// synthetic inline finding; assert on the gadget finding.
 			var view *csprecon.BypassView
+
 			for i := range views {
 				if views[i].Domain == "g.example" {
 					view = &views[i]
@@ -284,6 +285,7 @@ func TestBypassDirectiveAndFlags(t *testing.T) {
 					break
 				}
 			}
+
 			require.NotNil(t, view, "gadget finding missing: %+v", views)
 			require.Equal(t, tt.directive, view.Directive)
 			require.Equal(t, tt.flags, view.Flags)

@@ -370,6 +370,7 @@ func (db *gadgetDB) bypasses(targetURL, pageURL string, enforced []cspPolicy) []
 	page, _ := parseURLParts(pageURL)
 	flags := sortedKeys(flagSet)
 	directive := strings.Join(directives, ",")
+
 	if directive == "" {
 		directive = "no-script-src"
 	}
@@ -409,6 +410,7 @@ func (db *gadgetDB) bypasses(targetURL, pageURL string, enforced []cspPolicy) []
 	// Chrome-faithful matcher sees exactly what a browser would load.
 	openParts := urlParts{scheme: "https", host: "csprecon-any-host.invalid", port: portNone, path: "/x.js"}
 	openHost := allowedByAllEnforced(openParts, page, enforced)
+
 	if openHost {
 		findings = append(findings, bypassFinding{
 			url:       targetURL,
