@@ -753,7 +753,7 @@ func TestRunnerFatal(t *testing.T) {
 // TestRunnerTargetLinesTogether checks that the lines of one target are
 // printed together, not mixed with those of targets scanned at the same time.
 func TestRunnerTargetLinesTogether(t *testing.T) {
-	const gadgets = 50
+	const gadgets = 50 // gadget count in the dataset; kept for the tsv below
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Security-Policy", "script-src https:; img-src https://img.example")
@@ -780,7 +780,9 @@ func TestRunnerTargetLinesTogether(t *testing.T) {
 	})
 
 	lines := nonEmptyLines(out)
-	require.Len(t, lines, runnerTargets*gadgets+1)
+	// A scheme-only script-src (https:) no longer lists every gadget: the
+	// open-host finding is the real bypass (#525), one line per target.
+	require.Len(t, lines, runnerTargets+1)
 	require.Contains(t, lines, "img.example")
 
 	var targets []string

